@@ -13,7 +13,7 @@ const PORT = process.env.PORT;
 const server = http.createServer(app);
 
 const patientRouter = require('./routers/patient.router');
-const doctorRouter = require('./routers/doctor.router'); // Importez le routeur des médecins
+const doctorRouter = require('./routers/doctor.router'); 
 
 
 
@@ -21,7 +21,7 @@ const doctorRouter = require('./routers/doctor.router'); // Importez le routeur 
 app.use(bodyParser.json());
 
 app.use('/api/v1/patients', patientRouter);
-app.use('/api/v1/doctors', doctorRouter); // Utilisez le routeur des médecins
+app.use('/api/v1/doctors', doctorRouter); 
 
 
 
