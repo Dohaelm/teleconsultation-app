@@ -4,5 +4,6 @@ const router = express.Router();
 const PatientController=require("../controller/patient.controller");
 
 router.post('/',PatientController.register);
+router.get('/',PatientController.getDocs);
 
 module.exports=router;

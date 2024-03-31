@@ -16,7 +16,7 @@ exports.registerDoctor = async (req, res, next) => {
         const doc = new DoctorModel({firstName, lastName, email, password, birthdate, city, address, phoneNumber, nationalID, schedule, specialization, experience, hospitalAffiliation, additionalInfo, appointments});
         await doc.save();
         const  user = new UserModel({email, password, role:'doctor'})
-        user.save();
+        await user.save();
    
        
         return res.json({ status: true, success: "Doctor registered successfully" });
