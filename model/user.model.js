@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
-const db=require('../config/db');
 
 
-const { Schema } = mongoose;
+const { Schema,model } = mongoose;
 
 const userSchema = new Schema({
     email: {
@@ -23,6 +22,6 @@ const userSchema = new Schema({
 
 
 
-const User = mongoose.model('User', userSchema);
+const User = model('User', userSchema);
 
 module.exports = User;

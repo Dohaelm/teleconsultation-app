@@ -1,4 +1,8 @@
-const router=require('express').Router();
+const express=require('express');
+const router = express.Router();
+
 const PatientController=require("../controller/patient.controller");
-router.post('/register/patient',PatientController.register);
+
+router.post('/',PatientController.register);
+
 module.exports=router;

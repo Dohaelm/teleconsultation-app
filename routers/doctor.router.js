@@ -1,7 +1,9 @@
-const express = require('express');
+const express=require('express');
 const router = express.Router();
+
 const doctorController = require('../controller/doctor.controller');
 
-router.post('/register/doctor', doctorController.registerDoctor);
+router.post('/', doctorController.registerDoctor);
+router.get('/',doctorController.getDocs);
 
 module.exports = router;

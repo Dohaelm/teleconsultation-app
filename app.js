@@ -1,13 +1,31 @@
 const express = require('express');
+const http = require("http");
 const bodyParser = require('body-parser');
+const dotenv = require("dotenv");
+const connectDB = require("./config/db.js");
+
+dotenv.config({ path: "./config/config.env" });
+connectDB();
+
+
+const app = express();
+const PORT = process.env.PORT;
+const server = http.createServer(app);
 
 const patientRouter = require('./routers/patient.router');
 const doctorRouter = require('./routers/doctor.router'); // Importez le routeur des médecins
 
-const app = express();
+
+
 
 app.use(bodyParser.json());
-app.use('/', patientRouter);
-app.use('/', doctorRouter); // Utilisez le routeur des médecins
 
-module.exports = app;
+app.use('/api/v1/patients', patientRouter);
+app.use('/api/v1/doctors', doctorRouter); // Utilisez le routeur des médecins
+
+
+
+
+server.listen(PORT, () => {
+    console.log(`listening on ${PORT}`);
+  });

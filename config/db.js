@@ -1,9 +1,9 @@
-const mongoose=require('mongoose');
+const mongoose = require("mongoose") ;
+const { connect } = mongoose;
 
-const connection=mongoose.createConnection('mongodb://127.0.0.1:27017/teleconsultation').on('open',()=>{
-    console.log("MongoDb Connected");
-}).on('error',()=>{
-    console.log("MongoDb connection error")
-});
+const connectDB = async () => {
+  const conn = await connect(process.env.MONGO_URI);
+  console.log(`MongoDB Connected: ${conn.connection.host}`);
+};
 
-module.exports=connection;
+module.exports = connectDB;

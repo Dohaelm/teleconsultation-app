@@ -1,5 +1,4 @@
-const DoctorService = require("../services/doctor.services");
-const UserService = require('../services/user.services');
+const UserModel = require('../model/user.model');
 const DoctorModel = require('../model/doctor.model');
 
 exports.registerDoctor = async (req, res, next) => {
@@ -14,14 +13,21 @@ exports.registerDoctor = async (req, res, next) => {
         }
 
        
-        const successRes = await DoctorService.registerDoctor(firstName, lastName, email, password, birthdate, city, address, phoneNumber, nationalID, schedule, specialization, experience, hospitalAffiliation, additionalInfo, appointments);
-        
-        
-        const user = await UserService.registerUser(email, password, 'doctor');
+        const doc = new DoctorModel({firstName, lastName, email, password, birthdate, city, address, phoneNumber, nationalID, schedule, specialization, experience, hospitalAffiliation, additionalInfo, appointments});
+        await doc.save();
+        const  user = new UserModel({email, password, role:'doctor'})
+        user.save();
+   
        
-        res.json({ status: true, success: "Doctor registered successfully" });
+        return res.json({ status: true, success: "Doctor registered successfully" });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        return res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
+
+
+exports.getDocs = async (req, res, next) =>{
+   return res.json({ status: true, data: "Doctor  successfully" });
+}

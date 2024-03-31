@@ -1,9 +1,8 @@
 const mongoose=require('mongoose');
-const db=require('../config/db');
 const bcrypt=require('bcrypt');
 
 
-const{Schema}=mongoose;
+const{Schema,model}=mongoose;
 
 const patientSchema=new Schema({
     firstName:{
@@ -79,5 +78,5 @@ patientSchema.pre('save',async function(){
 } );
 
 
-const Patient=db.model('Patient',patientSchema);
+const Patient=model('Patient',patientSchema);
 module.exports=Patient;

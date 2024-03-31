@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
-const db = require('../config/db');
 const bcrypt=require('bcrypt');
 
-const { Schema } = mongoose;
+const { Schema,model } = mongoose;
 
 const doctorSchema = new Schema({
     firstName:{
@@ -79,5 +78,5 @@ doctorSchema.pre('save',async function(){
 } );
 
 
-const Doctor = db.model('Doctor', doctorSchema);
+const Doctor = model('Doctor', doctorSchema);
 module.exports = Doctor;
