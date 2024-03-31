@@ -14,12 +14,15 @@ const server = http.createServer(app);
 
 const patientRouter = require('./routers/patient.router');
 const doctorRouter = require('./routers/doctor.router'); 
+const userRouter = require('./routers/user.router'); 
+
 
 
 
 
 app.use(bodyParser.json());
 
+app.use('/api/v1/users', userRouter)
 app.use('/api/v1/patients', patientRouter);
 app.use('/api/v1/doctors', doctorRouter); 
 
