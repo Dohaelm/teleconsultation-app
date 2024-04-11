@@ -1,0 +1,46 @@
+<%- include('./layouts/header') %>
+<h1>User Registration Form</h1>
+<form action="/patient/register" method="post">
+        <label for="firstName">First Name:</label>
+        <input type="text" id="firstName" name="firstName" required><br>
+
+        <label for="lastName">Last Name:</label>
+        <input type="text" id="lastName" name="lastName" required><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br>
+
+        <label for="birthdate">Birthdate:</label>
+        <input type="date" id="birthdate" name="birthdate" required><br>
+
+        <label for="city">City:</label>
+        <input type="text" id="city" name="city"><br>
+
+        <label for="address">Address:</label>
+        <input type="text" id="address" name="address"><br>
+
+        <label for="phoneNumber">Phone Number:</label>
+        <input type="tel" id="phoneNumber" name="phoneNumber"><br>
+
+        <label for="nationalID">National ID:</label>
+        <input type="text" id="nationalID" name="nationalID"><br>
+
+        <label for="weight">Weight:</label>
+        <input type="number" id="weight" name="weight" step="0.01"><br>
+
+        <label for="height">Height:</label>
+        <input type="number" id="height" name="height" step="0.01"><br>
+
+        <label for="bloodType">Blood Type:</label>
+        <input type="text" id="bloodType" name="bloodType"><br>
+
+        <label for="diseases">Diseases:</label>
+        <textarea id="diseases" name="diseases" rows="4" cols="50"></textarea><br>
+
+        <input type="submit" value="Submit">
+    </form>
+
+<%-include('./layouts/footer') %>

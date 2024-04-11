@@ -13,13 +13,14 @@ exports.register = async (req, res, next) => {
         }
 
         
-        const patient = new PatientModel({ firstName, lastName, email, password, birthdate, city, address, phoneNumber, nationalID, weight, height, bloodType, diseases, appointments });
+        const patient = new PatientModel({firstName, lastName, email, password, birthdate, city, address, phoneNumber, nationalID, weight, height, bloodType, diseases, appointments });
         await patient.save();
 
         const  user = new UserModel({email, password, role:'patient'})
         await  user.save();
 
         res.json({ status: true, success: "Patient Registered Successfully" });
+    
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
