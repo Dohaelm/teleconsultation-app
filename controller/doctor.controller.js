@@ -1,5 +1,6 @@
 const UserModel = require('../model/user.model');
 const DoctorModel = require('../model/doctor.model');
+const{body,validationResult}=require('express-validator');
 
 exports.registerDoctor = async (req, res, next) => {
     try {

@@ -3,7 +3,7 @@ const DoctorModel=require("../model/doctor.model.js")
 const PatientModel=require("../model/patient.model.js")
 const asyncHandler =require("express-async-handler");
 const ErrorResponse =require( "../utils/ErrorResponse.js");
-
+const{body,validationResult}=require('express-validator');
 exports.getUsers = async (req,res,next) => {
     try {
         const users = await UserModel.find(); 

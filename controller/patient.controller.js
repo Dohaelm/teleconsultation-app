@@ -1,15 +1,31 @@
 
 const PatientModel = require("../model/patient.model");
 const UserModel = require("../model/user.model");
+const{body,validationResult}=require('express-validator');
 
 exports.register = async (req, res, next) => {
     try {
+        const errors = validationResult(req)
+        if(!errors.isEmpty()){
+            errors.array().forEach(error => {
+                req.flash('error',error.msg)
+            });
+           res.render('register',{email: req.body.email,
+        messages:req.flash()})
+           return;
+        }
         const {firstName, lastName, email, password, birthdate, city, address, phoneNumber, nationalID, weight, height, bloodType, diseases, appointments}=req.body;
 
         const existingPatient = await PatientModel.findOne({ email: req.body.email });
         if (existingPatient) {
+            
+            req.flash('warning','existing email sign in')
+
+            
+          
            
-            return res.status(400).json({ error: 'Email address already in use' });
+            res.redirect('/user/login');
+            return;
         }
 
         
@@ -18,8 +34,9 @@ exports.register = async (req, res, next) => {
 
         const  user = new UserModel({email, password, role:'patient'})
         await  user.save();
-
-        res.json({ status: true, success: "Patient Registered Successfully" });
+        req.flash('success',`${patient.email} registered successfully`)
+       res.redirect('/user/login')
+        // res.send(user);
     
     } catch (error) {
         console.error(error);
