@@ -7,16 +7,17 @@ const UserController=require("../controller/user.controller");
 
 router.get('/',UserController.getUsers);
 router.get('/login',(req,res,next)=>{
-    res.render('login');
+    res.render('login.ejs');
 })
 router.post('/login', (passport.authenticate('local', {
     successRedirect: '/profile',
     failureRedirect: '/user/login'
   })));
-  router.post('/logout', (req, res, next) => {
-    res.clearCookie('connect.sid'); 
+  
+router.get('/logout', (req, res, next) => {
+    
     req.logout(function(err) {
-        if (err) {
+        if (err) {s
             console.log(err);
             return next(err);
         }
@@ -25,13 +26,15 @@ router.post('/login', (passport.authenticate('local', {
                 console.log(err);
                 return next(err);
             }
-            res.redirect('/login');
+            res.redirect('/user/login');
         });
     });
+
 });
+
 router.get('/profile', passport.authenticate('local'), async (req, res, next) => {
     const person = req.user;
-    res.render('profile', { person });
+    res.render('profile.ejs', { person });
 });
 
 module.exports=router;

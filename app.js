@@ -1,5 +1,7 @@
 const express = require('express');
 const ejs = require('ejs');
+var path = require('path');
+var engines = require('consolidate');
 const morgan =require ('morgan');
 const http = require("http");
 const createHttpError= require("http-errors");
@@ -48,26 +50,33 @@ app.use((req,res,next)=>{
   next();
 })
 
+
+app.use(express.static('public'));
+app.set('views', path.join(__dirname, 'views'));
+app.engine('html', engines.mustache);
+app.set('view engine', 'html');
+
+
+app.use('/',indexRouter);
 app.use('/user', userRouter)
 app.use('/patient', patientRouter);
 app.use('/doctor', doctorRouter); 
-app.use('/',indexRouter);
 
 
 
-app.set('view engine','ejs');
-app.use(express.static('public'));
+
+
 
 app.use((req,res,next)=>{
   next(createHttpError.NotFound());
 });
 
-app.use((error,req,res,next)=>{
-  error.status=error.status || 500;
-  res.status(error.status);
-  res.send(error)
+// app.use((error,req,res,next)=>{
+//   error.status=error.status || 500;
+//   res.status(error.status);
+//   res.send(error)
 
-})
+// })
 
 
 server.listen(PORT, () => {
