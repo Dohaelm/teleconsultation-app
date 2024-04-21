@@ -9,20 +9,29 @@ router.get('/',UserController.getUsers);
 router.get('/login',(req,res,next)=>{
     res.render('login');
 })
-router.post('/login',passport.authenticate('local',{
-    successRedirect: "/user/profile",
-    failureRedirect:"/user/login",
-    failureFlash:true
-
-}));
-router.get('/logout',async(req,res,next)=>{
-    req.logout();
-    res.redirect('/');
-}); 
-router.get('/profile',async(req,res,next)=>{
-   
-    const person=req.user;
-    res.render('profile',{person});
-})
+router.post('/login', (passport.authenticate('local', {
+    successRedirect: '/profile',
+    failureRedirect: '/user/login'
+  })));
+  router.post('/logout', (req, res, next) => {
+    res.clearCookie('connect.sid'); 
+    req.logout(function(err) {
+        if (err) {
+            console.log(err);
+            return next(err);
+        }
+        req.session.destroy(function (err) { // destroys the session
+            if (err) {
+                console.log(err);
+                return next(err);
+            }
+            res.redirect('/login');
+        });
+    });
+});
+router.get('/profile', passport.authenticate('local'), async (req, res, next) => {
+    const person = req.user;
+    res.render('profile', { person });
+});
 
 module.exports=router;

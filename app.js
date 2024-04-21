@@ -38,9 +38,10 @@ app.use(session({
   }
 }));
 // For Passport JS Authentification
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.initialize());
+// app.use(passport.session());
 require('./utils/passport.auth');
+app.use(passport.authenticate('session'));
 app.use(connectFlash());
 app.use((req,res,next)=>{
   res.locals.messages=req.flash();
