@@ -40,11 +40,23 @@ nav ul li a:hover {
     <h2>Teleconsultation</h2>
     <ul>
         <li><a href="/">Home</a></li>
+       
+        <% console.log(user);
+        if(user) {
+        
+
+         %>
         <li><a href="/user/profile">profile</a></li>
-        <li><a href="/admin/users">Manage Users</a></li>
-        <li><a href="/patient/register">Register</a></li>
-        <li><a href="/user/login">Login</a></li>
         <li><a href="/user/logout">Logout</a></li>
+        <li><a href="/admin/users">Manage Users</a></li>
+        <% } else{  %>
+            <li><a href="/patient/register">Register</a></li>
+        <li><a href="/user/login">Login</a></li>
+            <% } %>
+
+        
+        
     </ul>
+    
 </nav>
 

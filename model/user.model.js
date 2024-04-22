@@ -38,8 +38,7 @@ userSchema.pre('save',async function(){
 userSchema.methods.isValidPassword= async function(password){
     try{
         const isMatch =await bcrypt.compare(password, this.password)
-        console.log(this.password)
-        console.log(password)
+       
         return isMatch;
     }catch(error){
         throw createHttpError.InternalServerError(error.message)

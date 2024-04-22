@@ -10,28 +10,29 @@ router.get('/login',(req,res,next)=>{
     res.render('login');
 })
 router.post('/login', (passport.authenticate('local', {
-    successRedirect: '/profile',
+    successRedirect: 'user/profile',
     failureRedirect: '/user/login'
-  })));
-  router.post('/logout', (req, res, next) => {
-    res.clearCookie('connect.sid'); 
+    
+  }
+),function(req, res) {
+  console.log("executed login!");
+  console.log(req.user);}
+));
+  
+  router.post('/logout', function(req, res, next) {
     req.logout(function(err) {
-        if (err) {
-            console.log(err);
-            return next(err);
-        }
-        req.session.destroy(function (err) { // destroys the session
-            if (err) {
-                console.log(err);
-                return next(err);
-            }
-            res.redirect('/login');
-        });
+      if (err) { return next(err); }
+      res.redirect('/');
     });
-});
-router.get('/profile', passport.authenticate('local'), async (req, res, next) => {
+  });
+
+router.get('/profile', passport.authenticate('local',{session: true}), async (req, res, next) => {
     const person = req.user;
+    
     res.render('profile', { person });
 });
-
+router.get('/logout',(req,res,next)=>{
+  req.logout();
+  res.redirect('/')
+})
 module.exports=router;
