@@ -1,10 +1,8 @@
 const express = require('express');
-const session = require('express-session');
-const passport = require('passport');
-const cookieParser=require('cookie-parser');
-const morgan = require('morgan');
-const http = require('http');
-const createHttpError = require('http-errors');
+const ejs = require('ejs');
+const morgan =require ('morgan');
+const http = require("http");
+const createHttpError= require("http-errors");
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db.js');
@@ -61,12 +59,14 @@ app.use((req, res, next) => {
 // Middleware to set res.locals.user
 
 
-app.use('/user', userRouter);
+app.use('/user', userRouter)
 app.use('/patient', patientRouter);
-app.use('/doctor', doctorRouter);
-app.use('/', indexRouter);
+app.use('/doctor', doctorRouter); 
+app.use('/',indexRouter);
 
-app.set('view engine', 'ejs');
+
+
+app.set('view engine','ejs');
 app.use(express.static('public'));
 
 // Middleware for handling 404 errors
@@ -74,11 +74,13 @@ app.use((req, res, next) => {
   next(createHttpError.NotFound());
 });
 
-// Error handling middleware
-app.use((error, req, res, next) => {
-  error.status = error.status || 500;
-  res.status(error.status).send(error.message || 'Internal Server Error');
-});
+app.use((error,req,res,next)=>{
+  error.status=error.status || 500;
+  res.status(error.status);
+  res.send(error)
+
+})
+
 
 server.listen(PORT, () => {
   console.log(`listening on ${PORT}`);

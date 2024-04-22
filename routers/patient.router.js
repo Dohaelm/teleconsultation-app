@@ -17,7 +17,7 @@ body('password').trim().isLength(5).withMessage('Password length is less than 5'
 PatientController.register);
 router.get('/register',(req,res,next)=>{
     
-    res.render('register');
+    res.render('register.ejs');
 });
 router.get('/',PatientController.getPatients);
 
