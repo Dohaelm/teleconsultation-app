@@ -157,7 +157,7 @@ thead th:nth-child(1) {
 }
 
 tbody tr:hover {
-  /* background-color: #fdf2f8; */
+   background-color: #fdf2f8; 
 }
 
 tbody tr td {
@@ -165,7 +165,7 @@ tbody tr td {
   margin: 8px 0;
 }
 
-.manage-user-form input[type='submit'] {
+.manage-user-form input[type='submit'], .table button {
   background: transparent;
   color: #db2777;
   border: none;
@@ -175,7 +175,7 @@ tbody tr td {
   border-radius: 8px;
 }
 
-.manage-user-form input[type='submit']:hover {
+.manage-user-form input [type='submit'], table button :hover {
   background-color: #fdf2f8;
 }
 

@@ -4,20 +4,60 @@
 
 <div class="profile">
   <div>
-    <p class="title">ID</p>
-    <p class="subtitle"><%= person.id %></p>
+    <p class="title">First Name</p>
+    <p class="subtitle"><%= user.firstName %></p>
   </div>
   <div>
-    <p class="title">Email/username</p>
-    <p class="subtitle"><%= person.email %></p>
+    <p class="title">Last Name</p>
+    <p class="subtitle"><%= user.lastName %></p>
+  </div>
+  <div>
+    <p class="title">Email</p>
+    <p class="subtitle"><%= user.email %></p>
   </div>
   <div>
     <p class="title">Role</p>
-    <p class="subtitle"><%= person.role %></p>
+    <p class="subtitle"><%= user.role %></p>
   </div>
-  <div>
-    <p class="title">User object</p>
-    <pre class="subtitle"><%= person %></pre>
-  </div>
+  <% if (patient) { %>
+    <div>
+      <p class="title">Birthdate</p>
+      <pre class="subtitle"><%= patient.Birthdate %></pre>
+    </div>
+    <div>
+      <p class="title">City</p>
+      <pre class="subtitle"><%= patient.City %></pre>
+    </div>
+    <div>
+      <p class="title">Weight</p>
+      <pre class="subtitle"><%= patient.Weight %></pre>
+    </div>
+    <div>
+      <p class="title">Height</p>
+      <pre class="subtitle"><%= patient.Height %></pre>
+    </div>
+    <div>
+      <p class="title">Bloodtype</p>
+      <pre class="subtitle"><%= patient.Bloodtype %></pre>
+    </div>
+  <% } else if (doctor) { %>  
+    <div>
+      <p class="title">City</p>
+      <pre class="subtitle"><%= doctor.City %></pre>
+    </div>
+    <div>
+      <p class="title">Specialization</p>
+      <pre class="subtitle"><%= doctor.Specialization %></pre>
+    </div>
+    <div>
+      <p class="title">Years of experience</p>
+      <pre class="subtitle"><%= doctor.experience %></pre>
+    </div>
+  <% } %>
+ 
+      <button class="edit-profile"><a href="/user/edit-profile">Edit Profile</a></button>
+  
+
 </div>
+
 <%- include('./layouts/footer') %>

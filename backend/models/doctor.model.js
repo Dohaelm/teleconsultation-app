@@ -33,12 +33,11 @@ const doctorSchema = new Schema({
     },
     birthdate:{
         type:Date,
-        required:true
+        
     },
     
     city: {
         type: String,
-        required: true
     },
     address: {
         type: String
