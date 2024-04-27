@@ -7,30 +7,36 @@ const { ensureLoggedOut, ensureLoggedIn } = require('connect-ensure-login');
 router.get('/profile', async (req, res) => {
   try {
     let patient=null;
-    // Assuming you have retrieved the user data from the database
-    const user = await User.findOne({ email: req.user.email });
+    let doctor=null;
+    let condition1=null;
+    let condition2=null;
     
+    // Assuming you have retrieved the user data from the database
+    const person = await User.findOne({ email: req.user.email });
+    if(person.id===req.user.id){
+      condition1=true;
+    }
 
     // Check if the user has the 'patient' role
-    if (user.role === roles.patient) {
+    if (person.role === roles.patient) {
       // Assuming you have retrieved the patient data from the database
        patient = await Patient.findOne({ email: req.user.email });
      
       
       // Render the profile page and pass user and patient data to the template
-      return res.render('profile', { user, patient });
+     
     }
     // Check if the user has the 'doctor' role
-     if (user.role === roles.doctor) {
+     if (person.role === roles.doctor) {
       // Assuming you have retrieved the doctor data from the database
-       const doctor = await Doctor.findOne({ email: req.user.email });
+       doctor = await Doctor.findOne({ email: req.user.email });
 
       // Render the profile page and pass user and doctor data to the template
-      return res.render('profile', { user, doctor,patient });
+    
     }
     
     // If the user is neither a patient nor a doctor, render the profile page with only user data
-    res.render('profile', { user });
+    return res.render('profile', {person, doctor,patient,condition1,condition2 });
   } catch (error) {
     // Handle errors
     console.error(error);
@@ -40,103 +46,102 @@ router.get('/profile', async (req, res) => {
 router.get('/edit-profile',async(req,res)=>{
   try{ 
     let patient=null;
+    let doctor=null;
+    let condition1=null;
+    let condition2=null;
+    
     
     // Assuming you have retrieved the user data from the database
-    const user = await User.findOne({ email: req.user.email });
+    const person = await User.findOne({ email: req.user.email });
     
-
+    if(person.id===req.user.id){
+      condition1=true;
+    }
     // Check if the user has the 'patient' role
-    if (user.role === roles.patient) {
+    if (person.role === roles.patient) {
       // Assuming you have retrieved the patient data from the database
        patient = await Patient.findOne({ email: req.user.email });
      
       
       // Render the profile page and pass user and patient data to the template
-      return res.render('edit-profile', { user, patient });
+   ;
     }
     // Check if the user has the 'doctor' role
-     if (user.role === roles.doctor) {
+     if (person.role === roles.doctor) {
       // Assuming you have retrieved the doctor data from the database
-       const doctor = await Doctor.findOne({ email: req.user.email });
+        doctor = await Doctor.findOne({ email: req.user.email });
 
       // Render the profile page and pass user and doctor data to the template
-      return res.render('edit-profile', { user, doctor,patient });
+      
     }
     
     // If the user is neither a patient nor a doctor, render the profile page with only user data
-    res.render('edit-profile', { user });
+    res.render('edit-profile', { person,patient,doctor,condition1,condition2 });
   } catch (error) {
     // Handle errors
     console.error(error);
     res.status(500).send('Internal Server Error');
   }
 });
-router.post('/save',async (req, res,next) => {
-  try {
-    const { email, role } = req.user; // Assuming req.user contains the user's data including the email and role
-    let updatedFields;
+router.post('/save',async(req,res)=>{
+  try{ 
+    
+    let patient=null;
+    let doctor=null
+    const {firstName,lastName,email}=req.body;
+    // Assuming you have retrieved the user data from the database
+    const person = await User.findOneAndUpdate({ email},{
+      firstName,
+      lastName
+    }); 
+    console.log(req.body);
+    person.save();
+    
 
-    // Check the user's role
-    if (role === roles.patient) {
-      // For patients, update the specific fields related to patient profile
-      updatedFields = {
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        birthdate:req.body.birthdate,
-        city:req.body.city,
-        weight: req.body.weight,
-        height: req.body.height,
-        bloodType: req.body.bloodType
-
-        
-        // Add other patient-specific fields here
-      };
-
-      // Find the patient by email
-      const patient = await Patient.findOne({ email });
-
-      // Update the patient object with the new data
-      Object.assign(patient, updatedFields);
-
-      // Save the updated patient object
-      await patient.save();
-    } else if (role===roles.doctor){
-      // For other roles, update the basic fields (first name, last name, email, etc.)
-      updatedFields = {
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        city:req.body.city,
-       specialization:req.body.specialization
-
-        // Add other common fields here
-      };
+    // Check if the user has the 'patient' role
+    if (person.role === roles.patient) {
+      // Assuming you have retrieved the patient data from the database
+       
+     
+     patient= await Patient.findOne({email})
+     patient.firstName=req.body.firstName
+      patient.lastName=req.body.lastName
+      patient.birthdate=req.body.birthdate
+      patient.city=req.body.city
+      patient.weight=req.body.weight
+      patient.height=req.body.height
+      patient.bloodType=req.body.bloodType
+     console.log(patient)
+     patient.save();
       
-
-      // Find the user by email
-      const doctor= await Doctor.findOne({ email });
-
-      // Update the user object with the new data
-      Object.assign(doctor, updatedFields);
-
-      // Save the updated user object
-      await doctor.save();
     }
-    else{
-      updatedFields={
-        firstName:req.body.firstName,
-        lastName:req.body.lastName
+    // Check if the user has the 'doctor' role
+     if (person.role === roles.doctor) {
+      doctor= await Doctor.findOne({email})
+      doctor.firstName=req.body.firstName
+        doctor.lastName=req.body.lastName
+        doctor.city=req.body.city
+        doctor.specialization=req.body.specialization
+        doctor.experience=req.body.experience
+        console.log(doctor)
+doctor.save();
 
-      }
     }
-
-    // Redirect back to the profile page with a success message
-    req.flash('success', 'Profile updated successfully');
-    res.redirect('/profile');
+    req.flash('success','changes successfully saved');
+    req.session.person = person;
+req.session.patient = patient;
+req.session.doctor = doctor;
+if(req.user.role===roles.admin){
+return res.redirect(`/admin/user/${person.id}`);}
+else{
+  res.redirect('/user/profile');
+}
+   
   } catch (error) {
     // Handle errors
-    next(error);
-    req.flash('error', 'Failed to update profile');
-    res.redirect('/profile');
+    console.error(error);
+    res.status(500).send('Internal Server Error');
   }
 });
+
 module.exports = router;

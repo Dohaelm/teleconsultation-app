@@ -18,13 +18,30 @@ router.get('/users', async (req, res, next) => {
 router.get('/user/:id', async (req, res, next) => {
   try {
     const { id } = req.params;
+    let condition1=null;
+    let condition2=null;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       req.flash('error', 'Invalid id');
       res.redirect('/admin/users');
       return;
     }
-    const person = await User.findById(id);
-    res.render('profile', { person });
+    
+    const person=await User.findById(id);
+    if (req.user.role===roles.admin){
+      condition2=true;
+    }
+    
+
+    let doctor=null;
+    let patient=null;
+    if (person.role===roles.doctor){
+      doctor= await Doctor.findOne({email:person.email})
+
+    }
+    else if(person.role===roles.patient){
+      patient= await Patient.findOne({email:person.email})
+    }
+    res.render('profile', { person , patient, doctor,condition1,condition2});
   } catch (error) {
     next(error);
   }
@@ -63,32 +80,32 @@ router.post('/update-role', async (req, res, next) => {
     }
 
     // Fetch user details
-    const user = await User.findById(id);
+    const person = await User.findById(id);
 
-    if (!user) {
+    if (!person) {
       req.flash('error', 'User not found');
       return res.redirect('back');
     }
 
     // Update user's role
-    user.role = role;
+    person.role = role;
 
     // Handle scenarios based on the updated role
     switch (role) {
       case roles.admin:
         // If the role is updated to admin, remove user from Doctor or Patient model if exists
-        await Doctor.findOneAndDelete({ email: user.email });
-        await Patient.findOneAndDelete({ email: user.email });
+        await Doctor.findOneAndDelete({ email: person.email });
+        await Patient.findOneAndDelete({ email: person.email });
         break;
       case roles.doctor:
         // If the role is updated to doctor, remove user from Patient model if exists
-        await Patient.findOneAndDelete({ email: user.email });
+        await Patient.findOneAndDelete({ email: person.email });
         // Create new Doctor model with user details
         await Doctor.create({
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          password: user.password,
+          firstName: person.firstName,
+          lastName: person.lastName,
+          email: person.email,
+          password: person.password,
           birthdate:null,
         
         city: null,
@@ -106,13 +123,13 @@ router.post('/update-role', async (req, res, next) => {
         break;
       case roles.patient:
         // If the role is updated to patient, remove user from Doctor model if exists
-        await Doctor.findOneAndDelete({ email: user.email });
+        await Doctor.findOneAndDelete({ email: person.email });
         // Create new Patient model with user details
         await Patient.create({
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          password: user.password, 
+          firstName: person.firstName,
+          lastName: person.lastName,
+          email:person.email,
+          password: person.password, 
           birthdate: null,
           city: null,
           address: null,
@@ -130,9 +147,9 @@ router.post('/update-role', async (req, res, next) => {
     }
 
     // Save updated user details
-    await user.save();
+    await person.save();
 
-    req.flash('info', `Updated role for ${user.email} to ${role}`);
+    req.flash('info', `Updated role for ${person.email} to ${role}`);
     res.redirect('back');
   } catch (error) {
     next(error);
@@ -142,80 +159,45 @@ router.post('/delete-user', async (req, res, next) => {
   try {
     const userId = req.body.id; // Assuming you're sending the user ID in the request body
     // Use Mongoose to find and delete the user by ID
-    const user = await User.findByIdAndDelete(userId);
-    req.flash('success', `user ${user.email} deleted`);
+    const person = await User.findByIdAndDelete(userId);
+    req.flash('success', `user ${person.email} deleted`);
     res.redirect('back');
   } catch (error) {
     // Handle any errors
     next(error);
   }
 });
-router.post('/profile/edit', async (req, res,next) => {
+router.get('/edit-profile-user/:id', async (req, res, next) => {
   try {
-    const { email, role } = req.user; // Assuming req.user contains the user's data including the email and role
-    let updatedFields;
-
-    // Check the user's role
-    if (role === roles.patient) {
-      // For patients, update the specific fields related to patient profile
-      updatedFields = {
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        birthdate:req.body.birthdate,
-        city:req.body.city,
-        weight: req.body.weight,
-        height: req.body.height,
-        bloodType: req.body.bloodType
-
-        
-        // Add other patient-specific fields here
-      };
-
-      // Find the patient by email
-      const patient = await Patient.findOne({ email });
-
-      // Update the patient object with the new data
-      Object.assign(patient, updatedFields);
-
-      // Save the updated patient object
-      await patient.save();
-    } else if (role===roles.doctor){
-      // For other roles, update the basic fields (first name, last name, email, etc.)
-      updatedFields = {
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        city:req.body.city,
-       specialization:req.body.specialization
-
-        // Add other common fields here
-      };
-      
-
-      // Find the user by email
-      const doctor= await Doctor.findOne({ email });
-
-      // Update the user object with the new data
-      Object.assign(doctor, updatedFields);
-
-      // Save the updated user object
-      await doctor.save();
+    const {id}  = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      req.flash('error', 'Invalid id');
+      res.redirect('/admin/users');
+       return;
+     }
+    const person = await User.findById(id);
+    console.log(req.body) ;
+    console.log(person);
+    let doctor=null;
+    let patient=null;
+    let condition1=null;
+    let condition2=null;
+    if(req.user.role===roles.admin){
+      condition2=true;
     }
-    else{
-      updatedFields={
-        firstName:req.body.firstName,
-        lastName:req.body.lastName
+    if (person.role===roles.doctor){
+      doctor= await Doctor.findOne({email:person.email})
+      console.log(doctor)
 
-      }
     }
-
-    // Redirect back to the profile page with a success message
-    req.flash('success', 'Profile updated successfully');
-    res.redirect('/profile');
+    else if(person.role===roles.patient){
+      patient= await Patient.findOne({email:person.email})
+      console.log(patient)
+    }
+   
+    res.render('edit-profile', { person , patient, doctor,condition1,condition2});
   } catch (error) {
-    // Handle errors
     next(error);
-    req.flash('error', 'Failed to update profile');
-    res.redirect('/profile');
   }
 });
 

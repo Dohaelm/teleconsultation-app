@@ -3,43 +3,46 @@
     <form action="/user/save" method="post">
     <div>
       <p class="title">First Name</p>
-      <input class="subtitle" name="firstName" value="<%= user.firstName %>">
+      <input class="subtitle" name="firstName" value="<%= person.firstName %>">
     </div>
     <div>
       <p class="title">Last Name</p>
-      <input class="subtitle" name="lastName" value="<%= user.lastName %>">
+      <input class="subtitle" name="lastName" value="<%= person.lastName %>">
     </div>
-    
+    <div>
+      <p class="title">Email</p>
+      <input name="email" value="<%= person.email %>" readonly>
+    </div>
       
       <% if (patient) { %>
         <div>
           <p class="title">Birthdate</p>
-          <input class="subtitle" name="birthdate" value="<%= patient.Birthdate %>">
+          <input class="subtitle" name="birthdate" value="<%= patient.birthdate %>">
         </div>
         <div>
           <p class="title">City</p>
-          <input class="subtitle" name="city" value="<%= patient.City %>">
+          <input class="subtitle" name="city" value="<%= patient.city %>">
         </div>
         <div>
           <p class="title">Weight</p>
-          <input class="subtitle" name="weight" value="<%= patient.Weight %>">
+          <input class="subtitle" name="weight" value="<%= patient.weight %>">
         </div>
         <div>
           <p class="title">Height</p>
-          <input class="subtitle" name="height" value="<%= patient.Height %>">
+          <input class="subtitle" name="height" value="<%= patient.height %>">
         </div>
         <div>
           <p class="title">Bloodtype</p>
-          <input class="subtitle" name="bloodType" value="<%= patient.Bloodtype %>">
+          <input class="subtitle" name="bloodType" value="<%= patient.bloodtype %>">
         </div>
       <% } else if (doctor) { %>  
         <div>
           <p class="title">City</p>
-          <input class="subtitle" name="city" value="<%= doctor.City %>">
+          <input class="subtitle" name="city" value="<%= doctor.city %>">
         </div>
         <div>
           <p class="title">Specialization</p>
-          <input class="subtitle" name="specialization" value="<%= doctor.Specialization %>">
+          <input class="subtitle" name="specialization" value="<%= doctor.specialization %>">
         </div>
         <div>
           <p class="title">Years of experience</p>
@@ -48,7 +51,7 @@
       <% } %>
      
           
-      <button class="save"><a href="/user/save">Save</a></button>
+      <button class="save" type="submit">Save</button>
       <button class="cancel"><a href="/user/profile" onsubmit="return confirm('changes are not saved, continue?')">cancel</a></button>
     </form>
   </div>
