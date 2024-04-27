@@ -5,7 +5,6 @@ module.exports = {
       .trim()
       .isEmail()
       .withMessage('Email must be a valid email')
-      .normalizeEmail()
       .toLowerCase(),
     body('password')
       .trim()

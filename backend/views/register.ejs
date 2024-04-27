@@ -1,17 +1,19 @@
 <%- include('./layouts/header') %>
 
-<h1>Register</h1>
-<form action="/auth/register" method="post" class="lg-form">
+<form class="register" action="/auth/register" method="post">
+<div class='container'>
+  <h1 id="id2">Register</h1>
+</div>
   
     <div>
-      <label for="firstName">First Name:</label>
+      <label id="id1" for="firstName">First Name:</label>
           <input type="text" id="firstName" name="firstName" required>
     </div>
     <div>
-      <label for="lastName">Last Name:</label>
+      <label id="id1" for="lastName">Last Name:</label>
           <input type="text" id="lastName" name="lastName" required>
     </div>
-    <label for="email">Email/Username</label>
+    <label id="id1" for="email">Email/Username</label>
     <input
       type="text"
       name="email"
@@ -20,21 +22,22 @@
     />
   </div>
   <div>
-    <label for="password">Password</label>
+    <label id="id1" for="password">Password</label>
     <input type="password" name="password" id="password" />
   </div>
   <div>
-    <label for="password2">Confirm password</label>
+    <label id="id1" for="password2">Confirm password</label>
     <input type="password" name="password2" id="password2" />
   </div>
   <div>
-    <input type="submit" value="Register" />
+    <!-- <input type="submit" value="Register" /> -->
+    <button class="btn submit">Register</button>
+  </div>
+  <div>
+    <p>
+      Already have an account? <span><a href="/auth/login">Login</a></span>
+    </p>
   </div>
 </form>
-<div>
-  <p>
-    Already have an account? <span><a href="/auth/login">Login</a></span>
-  </p>
-</div>
 <br />
 <%- include('./layouts/footer') %>
