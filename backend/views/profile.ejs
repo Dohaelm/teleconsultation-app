@@ -7,22 +7,66 @@
     <h1 id="id2">Profile</h1>
     <div class="profile-container">
       <div class="profile-line">
-        <p class="title">ID</p>
-        <p class="subtitle"><%= person.id %></p>
+        <p>First Name</p>
+        <p><%= person.firstName %></p>
       </div>
       <div class="profile-line">
-        <p class="title">Email/username</p>
-        <p class="subtitle"><%= person.email %></p>
+        <p>Last Name</p>
+        <p><%= person.lastName %></p>
       </div>
       <div class="profile-line">
-        <p class="title">Role</p>
-        <p class="subtitle"><%= person.role %></p>
+        <p>Email</p>
+        <p><%= person.email %></p>
       </div>
+      <div class="profile-line">
+        <p>Role</p>
+        <p><%= person.role %></p>
+      </div>
+      <% if (patient) { %>
+        <div class="profile-line">
+          <p>Birthdate</p>
+          <pre><%= patient.birthdate %></pre>
+        </div>
+        <div class="profile-line">
+          <p>City</p>
+          <pre><%= patient.city %></pre>
+        </div>
+        <div class="profile-line">
+          <p>Weight</p>
+          <pre><%= patient.weight %></pre>
+        </div>
+        <div class="profile-line">
+          <p>Height</p>
+          <pre><%= patient.height %></pre>
+        </div>
+        <div class="profile-line">
+          <p>Bloodtype</p>
+          <pre><%= patient.bloodType %></pre>
+        </div>
+      <% } else if (doctor) { %>  
+        <div class="profile-line">
+          <p>City</p>
+          <pre><%= doctor.city %></pre>
+        </div>
+        <div class="profile-line">
+          <p>Specialization</p>
+          <pre><%= doctor.specialization %></pre>
+        </div>
+        <div class="profile-line">
+          <p>Years of experience</p>
+          <pre><%= doctor.experience %></pre>
+        </div>
+      <% } %>
+     <% if (condition1) { %>
+      
+      <button class="edit-profile"><a href="/user/edit-profile">Edit Profile</a></button>
+     <% } %>
+     <% if (condition2) { %>
+      <button class="edit-profile"><a href="/admin/edit-profile-user/<%= person.id %>">Edit Profile</a></button>
+      
+     <% } %>
     </div>
   </div>
 </div>
-
-
-
 
 <%- include('./layouts/footer') %>

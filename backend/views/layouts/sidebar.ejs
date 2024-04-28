@@ -1,8 +1,21 @@
 <div class="side-panel">
   <h2 id="id2">Mon Espace Santé</h2>
   <ul>
+    
     <li>Profile</li>
+    <% if (user) { %>
+      <% if (user.role === 'PATIENT') { %>
     <li>Consultation</li>
     <li>My Appointments</li>
+    <% } %>
+    <% if (user.role === 'ADMIN') { %>
+      <li>Manage Users</li>
+    <% } %>
+    <% if (user.role === 'DOCTOR') { %>
+      <li>Appointments</li>
+      <li>Calendar</li>
+    <% } %>
+    <% } %>
+
   </ul>
 </div>
