@@ -1,0 +1,30 @@
+<%- include ('layouts/header') %>
+<h1 class="table">Medecins</h1>
+
+<form action="/user/doctors" method="GET">
+    <input type="text" name="search" placeholder="Search by Name, Specialization, or City">
+    <button type="submit">Search</button>
+</form>
+
+<table class="table">
+  <thead>
+    <th>Name</th>
+  
+    <th>email</th>
+    <th>specialization</th>
+    <th>city</th>
+  </thead>
+  <tbody>
+    <% doctors.forEach(doctor => { %>
+    <tr>
+      <td><%= doctor.firstName %> <%= doctor.lastName %> </td>
+      <td><a href="/user/doctor/<%= doctor.email %>"><%= doctor.email %></a></td>
+      <td><%= doctor.specialization %> </td>
+      <td><%= doctor.city %> </td>
+     
+</tr>
+<% }) %>
+</tbody>
+</table>
+
+<%- include ('layouts/footer') %>

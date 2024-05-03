@@ -4,6 +4,11 @@
     <li><a href="/">Home</a></li>
     <% if (user) { %>
     <li><a href="/user/profile">Profile</a></li>
+    <li><a href="/user/doctors">Medecins</a></li>
+    <% if (user.role === 'PATIENT' || user.role==='DOCTOR') { %>
+      <li><a href="/user/appointments">Mes rendez-vous</a></li>
+      <% } %>
+    
     <% if (user.role === 'ADMIN') { %>
     <li><a href="/admin/users">Manage Users</a></li>
     <% } %>

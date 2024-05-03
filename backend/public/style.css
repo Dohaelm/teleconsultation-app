@@ -189,9 +189,18 @@ tbody tr td {
 
 thead tr th:first-child,
 tbody tr td:first-child {
-  width: 6em;
-  min-width: 6em;
-  max-width: 6em;
+  width: 10em;
+  min-width: 15em;
+  max-width: 15em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 8px;
+}
+thead tr th:last-child,
+tbody tr td:last-child {
+  width: 10em;
+  min-width: 15em;
+  max-width: 15em;
   overflow: hidden;
   text-overflow: ellipsis;
   padding: 0 8px;

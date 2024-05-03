@@ -67,7 +67,7 @@ router.post(
       await user.save();
       
       if (user.role==roles.patient){
-        const patient = new Patient({firstName, lastName, email, password, birthdate:null, city:null, address:null, phoneNumber:null, nationalID:null, weight:null, height:null, bloodType:null, diseases:null, appointments:null });
+        const patient = new Patient({_id:user.id,firstName, lastName, email, password, birthdate:null, city:null, address:null, phoneNumber:null, nationalID:null, weight:null, height:null, bloodType:null, diseases:null, appointments:[], pendingAppointments:[] });
         await patient.save();
 
 

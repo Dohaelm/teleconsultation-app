@@ -20,6 +20,7 @@ router.get('/user/:id', async (req, res, next) => {
     const { id } = req.params;
     let condition1=null;
     let condition2=null;
+    let condition3=null;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       req.flash('error', 'Invalid id');
       res.redirect('/admin/users');
@@ -41,7 +42,7 @@ router.get('/user/:id', async (req, res, next) => {
     else if(person.role===roles.patient){
       patient= await Patient.findOne({email:person.email})
     }
-    res.render('profile', { person , patient, doctor,condition1,condition2});
+    res.render('profile', { person , patient, doctor,condition1,condition2,condition3});
   } catch (error) {
     next(error);
   }
@@ -86,6 +87,10 @@ router.post('/update-role', async (req, res, next) => {
       req.flash('error', 'User not found');
       return res.redirect('back');
     }
+    if (person.role===role) {
+      req.flash('warning', `User is already ${role}`);
+      return res.redirect('back');
+    }
 
     // Update user's role
     person.role = role;
@@ -102,6 +107,7 @@ router.post('/update-role', async (req, res, next) => {
         await Patient.findOneAndDelete({ email: person.email });
         // Create new Doctor model with user details
         await Doctor.create({
+          _id: person._id,
           firstName: person.firstName,
           lastName: person.lastName,
           email: person.email,
@@ -117,7 +123,9 @@ router.post('/update-role', async (req, res, next) => {
         experience: null,
         hospitalAffiliation:null,
         additionalInfo: null,
-        appointments: null // Ensure password is hashed
+        appointments: [],
+        pendingAppointments:[]
+         // Ensure password is hashed
           // Add other necessary fields for Doctor model initialization
         });
         break;
@@ -126,6 +134,7 @@ router.post('/update-role', async (req, res, next) => {
         await Doctor.findOneAndDelete({ email: person.email });
         // Create new Patient model with user details
         await Patient.create({
+          _id: person._id,
           firstName: person.firstName,
           lastName: person.lastName,
           email:person.email,
@@ -139,7 +148,8 @@ router.post('/update-role', async (req, res, next) => {
           height: null,
           bloodType: null,
           diseases: null,
-          appointments: null,
+          appointments: [],
+          pendingAppointments:[]
         });
         break;
       default:
@@ -157,9 +167,18 @@ router.post('/update-role', async (req, res, next) => {
 });
 router.post('/delete-user', async (req, res, next) => {
   try {
-    const userId = req.body.id; // Assuming you're sending the user ID in the request body
-    // Use Mongoose to find and delete the user by ID
+    const userId = req.body.id; 
+    if (req.user.id===req.body.id){
+      req.flash('warning', `Admin cannot delete himself`);
+      return res.redirect('back')
+    }
     const person = await User.findByIdAndDelete(userId);
+    if(person.role===roles.patient){
+      await Patient.findOneAndDelete({email:person.email})
+    }
+    if(person.role===roles.doctor){
+      await Doctor.findOneAndDelete({email:person.email})
+    }
     req.flash('success', `user ${person.email} deleted`);
     res.redirect('back');
   } catch (error) {
@@ -176,8 +195,7 @@ router.get('/edit-profile-user/:id', async (req, res, next) => {
        return;
      }
     const person = await User.findById(id);
-    console.log(req.body) ;
-    console.log(person);
+   
     let doctor=null;
     let patient=null;
     let condition1=null;
@@ -187,12 +205,11 @@ router.get('/edit-profile-user/:id', async (req, res, next) => {
     }
     if (person.role===roles.doctor){
       doctor= await Doctor.findOne({email:person.email})
-      console.log(doctor)
-
+     
     }
     else if(person.role===roles.patient){
       patient= await Patient.findOne({email:person.email})
-      console.log(patient)
+      
     }
    
     res.render('edit-profile', { person , patient, doctor,condition1,condition2});
