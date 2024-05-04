@@ -1,15 +1,22 @@
 <div class="side-panel">
-  <h2 id="id2">Mon Espace Santé</h2>
+  <% if (user.role === 'PATIENT') { %>
+    <h2 id="id2">Mon Espace Santé</h2>
+    <% } %>
+    <% if (user.role === 'ADMIN') { %>
+      <h2 id="id2">Mon Espace Admin</h2>
+    <% } %>
+    <% if (user.role === 'DOCTOR') { %>
+      <h2 id="id2">Mon Espace Santé</h2>
+    <% } %>
   <ul>
-    
-    <li>Profile</li>
+    <li><a href="/user/profile">Profile</a></li>
     <% if (user) { %>
       <% if (user.role === 'PATIENT') { %>
     <li>Consultation</li>
     <li>My Appointments</li>
     <% } %>
     <% if (user.role === 'ADMIN') { %>
-      <li>Manage Users</li>
+      <li><a href="/admin/users">Manage Users</a></li>
     <% } %>
     <% if (user.role === 'DOCTOR') { %>
       <li>Appointments</li>

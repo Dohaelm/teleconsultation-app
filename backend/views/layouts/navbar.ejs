@@ -10,7 +10,10 @@
     <li class="link"><a href="/user/profile">Mon Espace Santé</a></li>
     <% } %>
     <% if (user.role === 'ADMIN') { %>
-    <li class="link"><a href="/admin/users">Mon Espace Admin</a></li>
+    <li class="link"><a href="/user/profile">Mon Espace Admin</a></li>
+    <% } %>
+    <% if (user.role === 'DOCTOR') { %>
+    <li class="link"><a href="/user/profile">Mon Espace Médecin</a></li>
     <% } %>
     <li class="link"><a href="/auth/logout">Logout</a></li>
     <% } else { %>

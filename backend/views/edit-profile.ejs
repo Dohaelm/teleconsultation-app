@@ -1,4 +1,5 @@
 <%- include('./layouts/header') %>  
+<h1 id="id2">Edit Profil</h1>
 <div class="profile">
     <form action="/user/save" method="post">
     <div>
@@ -51,8 +52,8 @@
       <% } %>
      
           
-      <button class="save" type="submit">Save</button>
-      <button class="cancel"><a href="/user/profile" onsubmit="return confirm('changes are not saved, continue?')">cancel</a></button>
+      <button class="edit-profile" type="submit">Save</button>
+      <button class="cancel"><a href="/user/profile" onsubmit="return confirm('changes are not saved, continue?')">Cancel</a></button>
     </form>
   </div>
 <%- include('./layouts/footer') %>
