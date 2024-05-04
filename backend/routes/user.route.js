@@ -23,7 +23,7 @@ router.get('/profile', async (req, res) => {
     if (person.role === roles.patient) {
       // Assuming you have retrieved the patient data from the database
        patient = await Patient.findOne({ email: req.user.email });
-     console.log(patient)
+    
       
       // Render the profile page and pass user and patient data to the template
      
@@ -32,7 +32,7 @@ router.get('/profile', async (req, res) => {
      if (person.role === roles.doctor) {
       // Assuming you have retrieved the doctor data from the database
        doctor = await Doctor.findOne({ email: req.user.email });
-console.log(doctor)
+
       // Render the profile page and pass user and doctor data to the template
     
     }
@@ -113,7 +113,7 @@ router.post('/save',async(req,res)=>{
       patient.weight=req.body.weight
       patient.height=req.body.height
       patient.bloodType=req.body.bloodType
-     console.log(patient)
+     
      patient.save();
       
     }
@@ -129,7 +129,7 @@ router.post('/save',async(req,res)=>{
          const daysOfWeek=req.body.daysOfweekArray
         const startTimes=req.body.startTimesArray
         const endTimes=req.body.endTimesArray
-        console.log(daysOfWeek)
+        console.log(req.body)
       
         
         if (Array.isArray(daysOfWeek) && Array.isArray(startTimes) && Array.isArray(endTimes) ) {
@@ -140,14 +140,15 @@ router.post('/save',async(req,res)=>{
               dayOfWeek: daysOfWeek[i],
               startTime: startTimes[i],
               endTime:endTimes[i],
-              bookedBy: null // Initially set to null
+               // Initially set to null
             };
         
             // Push the availability object to the availability array
             availability.push(availabilityObj);
+            
+           
           }
         }
-        
         doctor.availability = availability;
         
         doctor.save();
