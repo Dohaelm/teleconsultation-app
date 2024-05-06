@@ -38,6 +38,7 @@ const doctorSchema = new Schema({
     
     city: {
         type: String,
+        lowercase:true
     },
     address: {
         type: String
@@ -48,17 +49,35 @@ const doctorSchema = new Schema({
     nationalID: {
         type: String
     },
-    schedule: {
-        workingHours: String,
-        daysOff: [String], 
+    availability:[{
+        dayOfWeek: {
+            type: String,
+            enum: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
+        },
+        startTime: {
+            type: String, // You can use a Date object if you need more precise time handling
+            required: true
+        },
+        endTime: {
+            type: String, // You can use a Date object if you need more precise time handling
+            
+        },
+        
        
-    },
-    specialization:String,
+    }],
+    specialization:{
+      type:  String,
+      lowercase:true},
     experience: Number,
     hospitalAffiliation: String,
     additionalInfo: String,
     appointments: [{
-        patientName: String,
+        patientEmail: String,
+        appointmentDate: Date,
+        reason: String
+    }],
+    pendingAppointments: [{
+        patientEmail: String,
         appointmentDate: Date,
         reason: String
     }]

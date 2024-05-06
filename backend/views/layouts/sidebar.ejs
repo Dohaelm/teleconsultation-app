@@ -6,21 +6,17 @@
       <h2 id="id2">Mon Espace Admin</h2>
     <% } %>
     <% if (user.role === 'DOCTOR') { %>
-      <h2 id="id2">Mon Espace Santé</h2>
+      <h2 id="id2">Mon Espace Médecin</h2>
     <% } %>
   <ul>
     <li><a href="/user/profile">Profile</a></li>
+    <li><a href="/user/doctors">Médecins</a></li>
     <% if (user) { %>
-      <% if (user.role === 'PATIENT') { %>
-    <li>Consultation</li>
-    <li>My Appointments</li>
+      <% if (user.role === 'PATIENT' || user.role === 'DOCTOR') { %>
+    <li><a href="/user/appointments"> Mes rendez-vous</a></li>
     <% } %>
     <% if (user.role === 'ADMIN') { %>
       <li><a href="/admin/users">Manage Users</a></li>
-    <% } %>
-    <% if (user.role === 'DOCTOR') { %>
-      <li>Appointments</li>
-      <li>Calendar</li>
     <% } %>
     <% } %>
 

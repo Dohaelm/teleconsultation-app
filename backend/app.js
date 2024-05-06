@@ -16,7 +16,7 @@ app.use(morgan('dev'));
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended:true}));
 
 const MongoStore = connectMongo(session);
 // Init Session

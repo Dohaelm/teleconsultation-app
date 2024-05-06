@@ -55,7 +55,12 @@ const patientSchema=new Schema({
     bloodType: String,
     diseases: [String],
     appointments: [{
-        doctorName: String,
+        doctorEmail: String,
+        appointmentDate: Date,
+        reason: String
+    }],
+    pendingAppointments: [{
+        doctorEmail: String,
         appointmentDate: Date,
         reason: String
     }]

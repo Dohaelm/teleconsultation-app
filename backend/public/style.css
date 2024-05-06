@@ -596,6 +596,47 @@ h1{
   text-align: center;
 }
 
+.btn_availability{
+  padding: 8px;
+  background-color: #fb923c;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+/* barre de recherche */
+/* Style de base pour le formulaire */
+#search {
+  display: flex;
+  align-items: center;
+  border: none;
+}
+
+/* Style pour le champ de recherche */
+#search input[type="text"] {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 5px;
+  width: 350px !important; /* Ajustez la largeur selon vos besoins */
+}
+
+/* Style pour le bouton de recherche */
+#search button[type="submit"] {
+  padding: 8px 12px;
+  background-color: #12ac8e; /* Couleur de fond du bouton */
+  color: white; /* Couleur du texte du bouton */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Style pour le texte de placeholder */
+#search input[type="text"]::placeholder {
+  color: #aaa; /* Couleur du texte de placeholder */
+}
+
+
 
 
 

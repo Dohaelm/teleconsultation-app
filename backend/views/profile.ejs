@@ -56,6 +56,19 @@
           <p>Years of experience</p>
           <pre><%= doctor.experience %></pre>
         </div>
+        <div class="profile-line">
+          <p>Availability</p>
+          <ul>
+            <% doctor.availability.forEach(slot => { %>
+                <% if (!slot.bookedBy) { %>
+                    <li>
+                       <p><%= slot.dayOfWeek %>   :   <%= slot.startTime %>-<%= slot.endTime %></p> 
+                        
+                    </li>
+                <% } %>
+            <% }) %>
+          </ul>
+        </div>
       <% } %>
      <% if (condition1) { %>
       
@@ -64,6 +77,9 @@
      <% if (condition2) { %>
       <button class="edit-profile"><a href="/admin/edit-profile-user/<%= person.id %>">Edit Profile</a></button>
       
+     <% } %>
+     <% if (condition3) { %>
+      <button> <a href="/user/booking/<%= doctor.id %>">Je prends un rendez-vous</a></button>
      <% } %>
     </div>
   </div>
