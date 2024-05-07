@@ -154,12 +154,12 @@ router.post('/save',async(req,res,next)=>{
         const startTimes=req.body.startTimesArray
         const endTimes=req.body.endTimesArray
         let accurate=true;
-        console.log(req.body)
+        if(startTimes && endTimes){
        for (let i=0;i<startTimes.length;i++){
         if (timeToMinutes(startTimes[i])>timeToMinutes(endTimes[i])){
           accurate=false;
         }
-       }
+       }}
        if(accurate==false){
         req.flash("warning","Veuillez choisir un horaire logique")
         return res.redirect('back')
@@ -632,4 +632,46 @@ router.get('/doctor/:email', async (req, res, next) => {
     next(error);
   }
 });
+router.post('/cancel-app',async(req,res,next)=>{
+  console.log(req.body)
+  const id=req.body.appId;
+  
+  const doctor= await Doctor.findOne({email:req.body.doctorEmail})
+  const patient= await Patient.findOne({email:req.body.patientEmail})
+  try {
+    let indexd;
+    let indexp;
+    for(i=0;i<doctor.appointments.length;i++){
+     if (doctor.appointments[i]._id===id){
+       indexd=i;
+     }
+
+    }
+    for(i=0;i<patient.appointments.length;i++){
+     if (patient.appointments[i]._id===id){
+       indexp=i;
+     }
+
+    }
+   // // If the slot is found
+    if (indexp !== -1 && indexd!==-1) {
+   //     // Remove the slot object from the availability array
+    patient.appointments.splice(indexp, 1);
+    patient.save();
+    console.log(patient.appointments)
+    doctor.appointments.splice(indexd, 1);
+    doctor.save();
+    console.log(doctor.appointments)
+    req.flash('success','Rendez-vous annulé')
+  }
+  else{
+    req.flash('error','Une erreur est detectée')
+  
+  }
+  return res.redirect('back');
+}
+  catch (error) {
+    next(error);
+  }
+})
 module.exports = router;

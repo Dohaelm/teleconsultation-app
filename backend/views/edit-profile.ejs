@@ -70,22 +70,28 @@
   
           <!-- Start Time Input -->
           <label for="startTime">Start Time:</label>
-          <select id="startTime" name="startTimes[]">
-              <option value="00:00">00:00</option> <!-- Special case for midnight -->
-              <% for (let hour = 1; hour <= 23; hour++) { %>
-                  <% const paddedHour = hour.toString().padStart(2, '0'); %>
-                  <option value="<%= paddedHour %>:00"><%= paddedHour %>:00</option>
-              <% } %>
-          </select>
-  
-          <label for="endTime">End Time:</label>
-          <select id="endTime" name="endTimes[]">
-              <option value="00:00">00:00</option> <!-- Special case for midnight -->
-              <% for (let hour = 1; hour <= 23; hour++) { %>
-                  <% const paddedHour = hour.toString().padStart(2, '0'); %>
-                  <option value="<%= paddedHour %>:00"><%= paddedHour %>:00</option>
-              <% } %>
-          </select>
+<select id="startTime" name="startTimes[]">
+    <option value="00:00">00:00</option> <!-- Special case for midnight -->
+    <% for (let hour = 0; hour < 24; hour++) { %>
+        <% for (let minute = 0; minute < 60; minute += 30) { %>
+            <% const paddedHour = hour.toString().padStart(2, '0'); %>
+            <% const paddedMinute = minute.toString().padStart(2, '0'); %>
+            <option value="<%= paddedHour %>:<%= paddedMinute %>"><%= paddedHour %>:<%= paddedMinute %></option>
+        <% } %>
+    <% } %>
+</select>
+
+<label for="endTime">End Time:</label>
+<select id="endTime" name="endTimes[]">
+    <option value="00:00">00:00</option> <!-- Special case for midnight -->
+    <% for (let hour = 0; hour < 24; hour++) { %>
+        <% for (let minute = 0; minute < 60; minute += 30) { %>
+            <% const paddedHour = hour.toString().padStart(2, '0'); %>
+            <% const paddedMinute = minute.toString().padStart(2, '0'); %>
+            <option value="<%= paddedHour %>:<%= paddedMinute %>"><%= paddedHour %>:<%= paddedMinute %></option>
+        <% } %>
+    <% } %>
+</select>
   
           <!-- Add Button -->
           <button type="button" onclick="addAvailability()">Add Availability</button>
