@@ -20,9 +20,10 @@
     <p class="subtitle"><%= person.role %></p>
   </div>
   <% if (patient) { %>
+    
     <div>
       <p class="title">Birthdate</p>
-      <pre class="subtitle"><%= patient.birthdate %></pre>
+      <pre class="subtitle" ><%= patient.birthdate.toLocaleDateString('en-GB') %></pre>
     </div>
     <div>
       <p class="title">City</p>
@@ -53,19 +54,23 @@
       <p class="title">Years of experience</p>
       <pre class="subtitle"><%= doctor.experience %></pre>
     </div>
-    <div>
+    <div class="availability">
       <p class="title">Availability</p>
       <ul>
-        <% doctor.availability.forEach(slot => { %>
-            <% if (!slot.bookedBy) { %>
-                <li>
-                   <p><%= slot.dayOfWeek %>   :   <%= slot.startTime %>-<%= slot.endTime %></p> 
-                    
-                </li>
-            <% } %>
-        <% }) %>
-    </ul>
-    </div>
+          <% sortedAvailability.forEach(day => { %>
+              <li>
+                  <p><%= day.dayOfWeek %>:</p>
+                  <ul>
+                      <% for (let i = 0; i < day.startTimes.length; i++) { %>
+                          <li>
+                              <p><%= day.startTimes[i] %> - <%= day.endTimes[i] %></p>
+                          </li>
+                      <% } %>
+                  </ul>
+              </li>
+          <% }) %>
+      </ul>
+  </div>
   <% } %>
  <% if (condition1) { %>
   
@@ -81,5 +86,7 @@
   
 
 </div>
+
+
 
 <%- include('./layouts/footer') %>

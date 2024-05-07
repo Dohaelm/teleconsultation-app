@@ -21,6 +21,7 @@
     "express-session": "^1.17.1",
     "express-validator": "^6.8.0",
     "http-errors": "^1.8.0",
+    "moment": "^2.30.1",
     "mongoose": "^5.11.7",
     "morgan": "^1.10.0",
     "passport": "^0.4.1",

@@ -1,4 +1,5 @@
 <%- include('./layouts/header') %>  
+
 <div class="profile">
     <form action="/user/save" method="post">
     <div>
@@ -13,11 +14,16 @@
       <p class="title">Email</p>
       <input name="email" value="<%= person.email %>" readonly>
     </div>
+    <% if (!patient && !doctor) { %>
+      <button class="save" type="submit">Save</button>
+      <button class="cancel"><a href="/user/profile" >cancel</a></button>
+     
+    <% } %>
       
       <% if (patient) { %>
         <div>
           <p class="title">Birthdate</p>
-          <input class="subtitle" name="birthdate" value="<%= patient.birthdate %>">
+          <input class="subtitle" name="birthdate" value="<%=patient.birthdate.toLocaleDateString('en-GB') %>">
         </div>
         <div>
           <p class="title">City</p>
@@ -100,21 +106,26 @@
       <div>
       
         <ul id="availabilityList">
-            <% doctor.availability.forEach(slot => { %>
-                <% if (!slot.bookedBy) { %>
-                    <li>
-                      <span><%= slot.dayOfWeek %> : <%= slot.startTime %> - <%= slot.endTime %></span>
-                      
-                      <form action="/user/delete-slot" method="post" onsubmit="return confirm('Are you sure you want to delete this user?')">
-                        <input type="hidden" name="id" value="<%= doctor.email %>" />
-                        <input type="hidden" name="slotId" value="<%= slot._id %>" />
-                        <button class="deleteSlot">Delete</button>
-                    </form>
-                           
-                    </li>
-                <% } %>
-            <% }) %>
-        </ul>
+          <% sortedAvailability.forEach((slot, index) => { %>
+              <li>
+                  <span><%= slot.dayOfWeek %> :</span>
+                  <ul>
+                      <% for (let i = 0; i < slot.startTimes.length; i++) { %>
+                          <li>
+                            <form class="deleteSlotForm" action="/user/delete-slot" method="post">
+                                <span><%= slot.startTimes[i] %> - <%= slot.endTimes[i] %></span>
+                                  <input type="hidden" name="id" value="<%= doctor.email %>" />
+                                  <input type="hidden" name="slotId" value="<%= slot._id %>" />
+                                  <input type="hidden" name="startTime" value="<%= slot.startTimes[i] %>" />
+                                  <input type="hidden" name="endTime" value="<%= slot.endTimes[i] %>" />
+                                  <button class="deleteSlot">Delete</button>
+                              </form>
+                          </li>
+                      <% } %>
+                  </ul>
+              </li>
+          <% }) %>
+      </ul>
     </div>
     </ul>
     </div>

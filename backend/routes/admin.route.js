@@ -21,6 +21,7 @@ router.get('/user/:id', async (req, res, next) => {
     let condition1=null;
     let condition2=null;
     let condition3=null;
+    let sortedAvailability=[];
     if (!mongoose.Types.ObjectId.isValid(id)) {
       req.flash('error', 'Invalid id');
       res.redirect('/admin/users');
@@ -37,12 +38,19 @@ router.get('/user/:id', async (req, res, next) => {
     let patient=null;
     if (person.role===roles.doctor){
       doctor= await Doctor.findOne({email:person.email})
+      const daysOfWeekOrder = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+
+      // Sort the availability array based on the order of daysOfWeekOrder
+         sortedAvailability = doctor.availability.sort((a, b) => {
+          return daysOfWeekOrder.indexOf(a.dayOfWeek) - daysOfWeekOrder.indexOf(b.dayOfWeek);
+      });
 
     }
     else if(person.role===roles.patient){
       patient= await Patient.findOne({email:person.email})
     }
-    res.render('profile', { person , patient, doctor,condition1,condition2,condition3});
+    console.log(doctor)
+    res.render('profile', { person , patient, doctor,condition1,condition2,condition3,sortedAvailability});
   } catch (error) {
     next(error);
   }
@@ -200,19 +208,25 @@ router.get('/edit-profile-user/:id', async (req, res, next) => {
     let patient=null;
     let condition1=null;
     let condition2=null;
+    let sortedAvailability=[];
     if(req.user.role===roles.admin){
       condition2=true;
     }
     if (person.role===roles.doctor){
       doctor= await Doctor.findOne({email:person.email})
-     
+      const daysOfWeekOrder = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+
+// Sort the availability array based on the order of daysOfWeekOrder
+   sortedAvailability = doctor.availability.sort((a, b) => {
+    return daysOfWeekOrder.indexOf(a.dayOfWeek) - daysOfWeekOrder.indexOf(b.dayOfWeek);
+});
     }
     else if(person.role===roles.patient){
       patient= await Patient.findOne({email:person.email})
       
     }
    
-    res.render('edit-profile', { person , patient, doctor,condition1,condition2});
+    res.render('edit-profile', { person , patient, doctor,condition1,condition2,sortedAvailability});
   } catch (error) {
     next(error);
   }
