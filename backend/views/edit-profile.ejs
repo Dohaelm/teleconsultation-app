@@ -23,7 +23,12 @@
       <% if (patient) { %>
         <div>
           <p class="title">Birthdate</p>
-          <input class="subtitle" name="birthdate" value="<%=patient.birthdate.toLocaleDateString('en-GB') %>">
+          <% if (condition4) { %>
+            <input class="subtitle" name="birthdate" value="<%= patient.birthdate.toLocaleDateString('en-GB') %>">
+          <% } else { %>
+            <input class="subtitle" name="birthdate" value="<%= patient.birthdate %>">
+          <% } %>
+          
         </div>
         <div>
           <p class="title">City</p>

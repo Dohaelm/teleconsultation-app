@@ -15,6 +15,7 @@ router.get('/profile', async (req, res) => {
     let condition2=null;
     let condition3=null;
     let sortedAvailability=[];
+    let condition4=null;
     
     const person= await User.findOne({ email: req.user.email })
   
@@ -26,6 +27,10 @@ router.get('/profile', async (req, res) => {
     if (person.role === roles.patient) {
       // Assuming you have retrieved the patient data from the database
        patient = await Patient.findOne({ email: req.user.email });
+       if(patient.birthdate){
+        condition4=true;
+
+       }
     
       
       // Render the profile page and pass user and patient data to the template
@@ -46,8 +51,8 @@ router.get('/profile', async (req, res) => {
     
     }
     console.log(sortedAvailability)
-   
-    return res.render('profile', {person, doctor,patient,condition1,condition2,condition3,sortedAvailability});
+   console.log(condition4)
+    return res.render('profile', {person, doctor,patient,condition1,condition2,condition3,sortedAvailability,condition4});
   } catch (error) {
     // Handle errors
     console.error(error);
@@ -62,7 +67,7 @@ router.get('/edit-profile',async(req,res)=>{
     let condition1=null;
     let condition2=null;
    let sortedAvailability=[];
-    
+    let condition4=null
     
     // Assuming you have retrieved the user data from the database
     const person = await User.findOne({ email: req.user.email });
@@ -74,6 +79,9 @@ router.get('/edit-profile',async(req,res)=>{
     if (person.role === roles.patient) {
       // Assuming you have retrieved the patient data from the database
        patient = await Patient.findOne({ email: req.user.email });
+       if(patient.birthdate){
+        condition4=true;
+       }
       
       
       // Render the profile page and pass user and patient data to the template
@@ -95,7 +103,7 @@ router.get('/edit-profile',async(req,res)=>{
     }
     
     // If the user is neither a patient nor a doctor, render the profile page with only user data
-    res.render('edit-profile', { person,patient,doctor,condition1,condition2,sortedAvailability });
+    res.render('edit-profile', { person,patient,doctor,condition1,condition2,sortedAvailability,condition4 });
   } catch (error) {
     // Handle errors
     console.error(error);
@@ -556,6 +564,7 @@ router.get('/patient/:email', async (req, res, next) => {
     let condition1=null;
     let condition2=null;
     let condition3=null;
+    let condition4=null;
     
    
    
@@ -579,10 +588,12 @@ router.get('/patient/:email', async (req, res, next) => {
     let patient=null;
     if (person.role===roles.patient){
       patient= await Patient.findOne({email:person.email})
-
+       if(patient.birthdate){
+        condition4=true;
+       }
     }
     
-   return res.render('profile', { person , patient, doctor,condition1,condition2,condition3});
+   return res.render('profile', { person , patient, doctor,condition1,condition2,condition3,condition4});
   } catch (error) {
     next(error);
   }
