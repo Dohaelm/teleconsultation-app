@@ -21,6 +21,7 @@ router.get('/user/:id', async (req, res, next) => {
     let condition1=null;
     let condition2=null;
     let condition3=null;
+    let condition4=null;
     let sortedAvailability=[];
     if (!mongoose.Types.ObjectId.isValid(id)) {
       req.flash('error', 'Invalid id');
@@ -48,9 +49,12 @@ router.get('/user/:id', async (req, res, next) => {
     }
     else if(person.role===roles.patient){
       patient= await Patient.findOne({email:person.email})
+      if(patient.birthdate){
+        condition4=true
+      }
     }
     console.log(doctor)
-    res.render('profile', { person , patient, doctor,condition1,condition2,condition3,sortedAvailability});
+    res.render('profile', { person , patient, doctor,condition1,condition2,condition3,sortedAvailability,condition4});
   } catch (error) {
     next(error);
   }
@@ -208,6 +212,7 @@ router.get('/edit-profile-user/:id', async (req, res, next) => {
     let patient=null;
     let condition1=null;
     let condition2=null;
+    let condition4=null;
     let sortedAvailability=[];
     if(req.user.role===roles.admin){
       condition2=true;
@@ -223,10 +228,13 @@ router.get('/edit-profile-user/:id', async (req, res, next) => {
     }
     else if(person.role===roles.patient){
       patient= await Patient.findOne({email:person.email})
+      if(patient.birthdate){
+        condition4=true;
+      }
       
     }
    
-    res.render('edit-profile', { person , patient, doctor,condition1,condition2,sortedAvailability});
+    res.render('edit-profile', { person , patient, doctor,condition1,condition2,sortedAvailability,condition4});
   } catch (error) {
     next(error);
   }
