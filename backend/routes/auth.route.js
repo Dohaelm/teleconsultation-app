@@ -51,9 +51,10 @@ router.post(
         });
         return;
       }
+      console.log(req.body)
 
-      const {firstName,lastName,email,password} = req.body;
-      console.log(typeof req.body)
+      const {firstName,lastName,email,password,role} = req.body;
+     
      
       
       const doesExist = await User.findOne({ email });
@@ -62,15 +63,17 @@ router.post(
         res.redirect('/auth/register');
         return;
       }
-      
-      const user = new User({firstName,lastName,email,password,role:roles.patient});
-      await user.save();
+      const userRole = role === 'doctor' ? roles.attente : roles.patient;
+      console.log(userRole)
+      const user = new User({firstName,lastName,email,password,role:userRole});
+      await user.save(); 
+      console.log(user)
       
       if (user.role==roles.patient){
         const patient = new Patient({_id:user.id,firstName, lastName, email, password, birthdate:null, city:null, address:null, phoneNumber:null, nationalID:null, weight:null, height:null, bloodType:null, diseases:null, appointments:[], pendingAppointments:[] });
         await patient.save();
 
-
+      
 
       }
       req.flash(

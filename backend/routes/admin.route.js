@@ -130,13 +130,15 @@ router.post('/update-role', async (req, res, next) => {
         address: null,
         phoneNumber: null,
         nationalID: null,
-        schedule: null,
+       availability: [],
         specialization:null,
         experience: null,
         hospitalAffiliation:null,
         additionalInfo: null,
         appointments: [],
-        pendingAppointments:[]
+        pendingAppointments:[],
+        availabilitytimeslots:[]
+        
          // Ensure password is hashed
           // Add other necessary fields for Doctor model initialization
         });
@@ -164,6 +166,10 @@ router.post('/update-role', async (req, res, next) => {
           pendingAppointments:[]
         });
         break;
+      case roles.attente:
+          await Doctor.findOneAndDelete({email:person.email})
+          await Patient.findOneAndDelete({email:person.email})
+          break;
       default:
         break;
     }

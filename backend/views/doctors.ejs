@@ -1,9 +1,9 @@
 <%- include ('layouts/header') %>
 <h1 class="table">Medecins</h1>
 
-<form action="/user/doctors" method="GET">
-    <input type="text" name="search" placeholder="Search by Name, Specialization, or City">
-    <button type="submit">Search</button>
+<form id="searchForm" action="/user/doctors" method="GET">
+  <input id="searchInput" type="text" name="search" placeholder="Search by Name, Specialization, or City" value="<%= searchQuery || '' %>">
+  <button type="submit">Search</button>
 </form>
 
 <table class="table">
@@ -26,5 +26,16 @@
 <% }) %>
 </tbody>
 </table>
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+      const searchInput = document.getElementById('searchInput');
+      const searchParams = new URLSearchParams(window.location.search);
+      const searchQuery = searchParams.get('search');
+
+      if (searchQuery) {
+          searchInput.value = searchQuery;
+      }
+  });
+</script>
 
 <%- include ('layouts/footer') %>

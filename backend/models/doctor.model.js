@@ -74,7 +74,20 @@ const doctorSchema = new Schema({
         patientEmail: String,
         appointmentDate: Date,
         reason: String
-    }]
+    }],
+    availabletimeslots:[{
+        dayName: {
+            type: String,
+            enum: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+           
+        },
+       
+        availableTimes: [String], 
+        bookedTimes: [Date] 
+    
+    }
+
+    ]
 });
 doctorSchema.pre('save',async function(){
     try{

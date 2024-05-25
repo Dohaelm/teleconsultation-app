@@ -88,8 +88,8 @@
                     <td> <!-- New column for actions -->
                         <form action="/user/cancel-app" method="post" onsubmit="return confirm('Are you sure you want to delete this appointment?')">
                             <input type="hidden" name="appId" value="<%= appointment._id %>" />
-                            <input type="hidden" name="patientEmail" value="<%= appointment.patientEmail %>" />
-                            <input type="hidden" name="doctorEmail" value="<%= doctor.email%>" />
+                            <input type="hidden" name="doctorEmail" value="<%= appointment.doctorEmail %>" />
+                            <input type="hidden" name="patientEmail" value="<%= patient.email%>" />
                             <button type="submit">Annuler</button>
                         </form>
                     </td>

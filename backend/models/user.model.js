@@ -29,8 +29,8 @@ lastName:{
   },
   role: {
     type: String,
-    enum: [roles.admin, roles.doctor, roles.patient],
-    default: roles.patient,
+    enum: [roles.admin, roles.doctor, roles.patient,roles.attente],
+ 
   },
 });
 

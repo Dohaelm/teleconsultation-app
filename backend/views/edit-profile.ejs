@@ -24,7 +24,7 @@
         <div>
           <p class="title">Birthdate</p>
           <% if (condition4) { %>
-            <input class="subtitle" name="birthdate" value="<%= patient.birthdate.toLocaleDateString('en-GB') %>">
+            <input class="subtitle" name="birthdate" value="<%= patient.birthdate.toLocaleDateString('fr-FR') %>">
           <% } else { %>
             <input class="subtitle" name="birthdate" value="<%= patient.birthdate %>">
           <% } %>
@@ -44,7 +44,7 @@
         </div>
         <div>
           <p class="title">Bloodtype</p>
-          <input class="subtitle" name="bloodType" value="<%= patient.bloodtype %>">
+          <input class="subtitle" name="bloodType" value="<%= patient.bloodType %>">
           <button class="save" type="submit">Save</button>
       <button class="cancel"><a href="/user/profile" >cancel</a></button>
         </div>

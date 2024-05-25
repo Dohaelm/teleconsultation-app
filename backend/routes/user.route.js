@@ -19,7 +19,7 @@ router.get('/profile', async (req, res) => {
     
     const person= await User.findOne({ email: req.user.email })
   
-    
+  
     // Assuming you have retrieved the user data from the database
    
 
@@ -50,8 +50,8 @@ router.get('/profile', async (req, res) => {
 // 
     
     }
-    console.log(sortedAvailability)
-   console.log(condition4)
+    
+   console.log(doctor.availabletimeslots)
     return res.render('profile', {person, doctor,patient,condition1,condition2,condition3,sortedAvailability,condition4});
   } catch (error) {
     // Handle errors
@@ -117,6 +117,24 @@ function timeToMinutes(time) {
   // Convert hours to minutes and add minutes
   return hours * 60 + minutes;
 }
+function dividingTimeSlots(startTime, endTime) {
+  const timeSlots = [];
+  
+  // Convertir l'heure de début en objet Moment
+  const startMoment = moment(startTime, 'HH:mm');
+  
+  // Convertir l'heure de fin en objet Moment
+  const endMoment = moment(endTime, 'HH:mm');
+  
+  // Ajouter les créneaux horaires à partir de l'heure de début jusqu'à l'heure de fin
+  while (startMoment.isBefore(endMoment)) {
+      timeSlots.push(startMoment.format('HH:mm'));
+      startMoment.add(30, 'minutes');
+  }
+  
+  return timeSlots;
+}
+
 router.post('/save',async(req,res,next)=>{
   try{ 
     
@@ -129,7 +147,7 @@ router.post('/save',async(req,res,next)=>{
       lastName
     }); 
    
-    person.save();
+   await  person.save();
     
 
     // Check if the user has the 'patient' role
@@ -145,14 +163,15 @@ router.post('/save',async(req,res,next)=>{
       patient.weight=req.body.weight
       patient.height=req.body.height
       patient.bloodType=req.body.bloodType
+      
      
-     patient.save();
+    await  patient.save();
       
     }
     // Check if the user has the 'doctor' role
      if (person.role === roles.doctor) {
        doctor= await Doctor.findOne({email})
-       const availability = doctor.availability;
+     
       doctor.firstName=req.body.firstName
         doctor.lastName=req.body.lastName
         doctor.city=req.body.city
@@ -176,8 +195,15 @@ router.post('/save',async(req,res,next)=>{
         if (Array.isArray(daysOfWeek) && Array.isArray(startTimes) && Array.isArray(endTimes) ) {
           // Iterate over each selected day/time slot combination
           for (let i = 0; i < daysOfWeek.length; i++) {
-             
-            const existingIndex = doctor.availability.findIndex(slot => slot.dayOfWeek === daysOfWeek[i]);
+
+            
+             const existingIndex = doctor.availability.findIndex(slot => slot.dayOfWeek === daysOfWeek[i]);
+           
+         
+            const existingIndex2 = doctor.availabletimeslots.findIndex(slot => slot.dayName === daysOfWeek[i]);
+           
+           
+           
             let timeSlotExists=false;
             let overlapsExistingSlot=false;
            if (existingIndex !== -1 ){
@@ -199,29 +225,69 @@ router.post('/save',async(req,res,next)=>{
            
                 // Update existing availability object
                 doctor.availability[existingIndex].startTimes.push(startTimes[i]);
+                doctor.availability[existingIndex].startTimes.sort((time1, time2) => {
+                  // Convert time strings to Date objects
+                  const date1 = new Date(`2000-01-01T${time1}`);
+                  const date2 = new Date(`2000-01-01T${time2}`);
+                
+                  // Compare the Date objects
+                  return date1 - date2;
+                });
                 doctor.availability[existingIndex].endTimes.push(endTimes[i]);
+                doctor.availability[existingIndex].endTimes.sort((time1, time2) => {
+                  // Convert time strings to Date objects
+                  const date1 = new Date(`2000-01-01T${time1}`);
+                  const date2 = new Date(`2000-01-01T${time2}`);
+                
+                  // Compare the Date objects
+                  return date1 - date2;
+                });
+                if (existingIndex2 !== -1) {
+                  const newTimeSlots = dividingTimeSlots(startTimes[i], endTimes[i]);
+                  doctor.availabletimeslots[existingIndex2].availableTimes = doctor.availabletimeslots[existingIndex2].availableTimes.concat(newTimeSlots);
+                  // Sort the availableTimes array
+doctor.availabletimeslots[existingIndex2].availableTimes.sort((time1, time2) => {
+  // Convert time strings to Date objects
+  const date1 = new Date(`2000-01-01T${time1}`);
+  const date2 = new Date(`2000-01-01T${time2}`);
+
+  // Compare the Date objects
+  return date1 - date2;
+});
+
+              }
             }else {
                 const availabilityObj = {
                     dayOfWeek: daysOfWeek[i],
                     startTimes: [startTimes[i]],
                     endTimes: [endTimes[i]]
                 };
-                doctor.availability.push(availabilityObj); // Add new availability object
-            }
+              if(existingIndex2===-1){
+                const availabilityTimeslot={
+                  dayName: daysOfWeek[i],
+                  availableTimes:dividingTimeSlots(startTimes[i],endTimes[i]),
+                  bookedTimes:[]
+
+
+                }
+                doctor.availabletimeslots.push(availabilityTimeslot)
+              }
+                doctor.availability.push(availabilityObj);
+               
+            }  
         }
         
-        // Save the doctor document after all modifications
-       
-            // Push the availability object to the availability array
-           console.log(doctor.availability)
-            
+        
+        
+           
            
           }
 
+          await  doctor.save()
+         
         }
         
         
-        await  doctor.save()
 
     
     req.flash('success','Les changements sont enregistrés avec succès ');
@@ -254,22 +320,40 @@ router.post('/delete-slot', async (req, res, next) => {
 
        // Find the slot object in the doctor's availability array by its ID
         let slotIndex;
+
+        
        for(i=0;i<doctor.availability.length;i++){
        if (doctor.availability[i]._id==slotId){
            slotIndex=i;
          }
 
        }
+    
   
- 
+    
      if (slotIndex !== -1) {
+              
               let Index;
+              
+              
           for (i=0;i<doctor.availability[slotIndex].startTimes.length;i++){
              if(doctor.availability[slotIndex].startTimes[i]==startTime){
                Index=i;
              
             }
           }
+          let dayName=doctor.availability[slotIndex].dayOfWeek;
+          let starttime=doctor.availability[slotIndex].startTimes[Index];
+          let endtime=doctor.availability[slotIndex].endTimes[Index];
+          let Index2=doctor.availabletimeslots.findIndex(slot=>slot.dayName==dayName)
+          if(Index2!==-1){
+          let availableTimes=doctor.availabletimeslots[Index2].availableTimes;
+          let timesToDelete = dividingTimeSlots(starttime, endtime);
+          doctor.availabletimeslots[Index2].availableTimes = availableTimes.filter(time => !timesToDelete.includes(time));
+          if(doctor.availabletimeslots[Index2].availableTimes.length===0){
+            doctor.availabletimeslots.splice(Index2,1);
+          }
+        }
            doctor.availability[slotIndex].startTimes.splice(Index,1)
            doctor.availability[slotIndex].endTimes.splice(Index,1)
            if (doctor.availability[slotIndex].startTimes.length===0){
@@ -277,7 +361,9 @@ router.post('/delete-slot', async (req, res, next) => {
 
            }
           }
+       
           await doctor.save();
+          console.log(doctor.availabletimeslots);
           req.flash("success","Horaire supprimé avec succès")
           return res.redirect('back')
        
@@ -307,25 +393,31 @@ router.post('/delete-slot', async (req, res, next) => {
 
 router.get('/doctors', async (req, res, next) => {
   try {
-   let doctors= await Doctor.find();
-   
-   if (req.query.search) {
-    const searchQuery = req.query.search.toLowerCase();
-    doctors = doctors.filter(doctor => 
-        doctor.lastName.toLowerCase().includes(searchQuery) ||
-        doctor.firstName.toLowerCase().includes(searchQuery)||
-        (doctor.firstName.toLowerCase() + ' ' + doctor.lastName.toLowerCase()).includes(searchQuery) || 
-         doctor.specialization.toLowerCase().includes(searchQuery) ||
-        doctor.city.toLowerCase().includes(searchQuery)
-    );
-}
-    
-    res.render('doctors', { 
-        doctors
-    });
-} catch (error) {
-    next(error);
-}
+      let doctors = await Doctor.find();
+      const searchQuery = req.query.search || '';
+      if (req.query.search) {
+           
+          const searchQueryStand = req.query.search.toLowerCase();
+          const searchTerms = searchQueryStand.split(' ');
+
+          // Filter doctors based on each search term independently
+          doctors = doctors.filter(doctor => {
+              return searchTerms.every(term =>
+                  doctor.lastName.toLowerCase().includes(term) ||
+                  doctor.firstName.toLowerCase().includes(term) ||
+                  (doctor.firstName.toLowerCase() + ' ' + doctor.lastName.toLowerCase()).includes(term) ||
+                  doctor.specialization.toLowerCase().includes(term) ||
+                  doctor.city.toLowerCase().includes(term)
+              );
+          });
+      }
+
+      res.render('doctors', {
+          doctors,searchQuery
+      });
+  } catch (error) {
+      next(error);
+  }
 });
 
 router.get('/booking/:id',async(req,res,next)=>{
@@ -400,6 +492,7 @@ router.post('/book-appointment',async(req,res,next)=>{
     console.log(req.body)
   
     const appDate = new Date(req.body.date);
+
   const reason=req.body.reason;
  
   const doctorEmail=req.body.doctorEmail
@@ -409,7 +502,7 @@ router.post('/book-appointment',async(req,res,next)=>{
   let isAvailable=true;
   const appointmentId = generateUniqueId();
 
- 
+  
 
    doctor.appointments.forEach(appointment => {
     // Calculate the absolute time difference between appDate and appointmentDate
@@ -424,9 +517,10 @@ router.post('/book-appointment',async(req,res,next)=>{
      
 })
 
-console.log(isAvailable)
+
   const daysOfWeek = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
   const dayofApp=daysOfWeek[appDate.getDay()]
+  
   const availabilityEntry = doctor.availability.find(entry => entry.dayOfWeek === dayofApp);
   if (!availabilityEntry) {
     req.flash('warning','Veuillez choisir un autre jour'); 
@@ -436,10 +530,13 @@ for (i=0;i<availabilityEntry.startTimes.length;i++){
 const dayStart=timeToMinutes(availabilityEntry.startTimes[i]) 
 const dayEnd=timeToMinutes(availabilityEntry.endTimes[i]) 
 const timeApp=timeToMinutes(formatTime(appDate))
-if(isAvailable && timeApp<dayEnd && timeApp>dayStart ){
+let Index= doctor.availabletimeslots.findIndex(slot=>slot.dayName===dayofApp);
+if(isAvailable && timeApp<dayEnd && timeApp>dayStart && Index!==-1 ){
   doctor.pendingAppointments.push({ _id:appointmentId,patientEmail: patientEmail,
     appointmentDate: appDate,
     reason: reason})
+    doctor.availabletimeslots[Index].bookedTimes.push(appDate) ;
+
   doctor.save();
   patient.pendingAppointments.push({_id:appointmentId, doctorEmail: doctorEmail,
     appointmentDate: appDate,
@@ -462,36 +559,41 @@ if(isAvailable && timeApp<dayEnd && timeApp>dayStart ){
 }
 })
 router.post('/delete-app',async(req,res,next)=>{
-  console.log(req.body)
+ 
   const id=req.body.appId;
   
   const doctor= await Doctor.findOne({email:req.body.doctorEmail})
   const patient= await Patient.findOne({email:req.body.patientEmail})
   try {
-    let indexd;
-    let indexp;
-    for(i=0;i<doctor.pendingAppointments.length;i++){
-     if (doctor.pendingAppointments[i]._id===id){
-       indexd=i;
-     }
+   
+    const indexd = doctor.pendingAppointments.findIndex(appointment => appointment._id ==id);
+        const indexp = patient.pendingAppointments.findIndex(appointment => appointment._id ==id);
+        let date=new Date(doctor.pendingAppointments[indexd].appointmentDate);
+        const daysOfWeek = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+        const day=daysOfWeek[date.getDay()]
+        let Index1=doctor.availabletimeslots.findIndex(slot=>slot.dayName==day);
+        let Index2;
+        if(Index1!==-1){
+           Index2=doctor.availabletimeslots[Index1].bookedTimes.findIndex(slot=> slot.getTime()==date.getTime());}
 
-    }
-    for(i=0;i<patient.pendingAppointments.length;i++){
-     if (patient.pendingAppointments[i]._id===id){
-       indexp=i;
-     }
-
-    }
-   // // If the slot is found
     if (indexp !== -1 && indexd!==-1) {
+      
+     
    //     // Remove the slot object from the availability array
-    patient.pendingAppointments.splice(indexp, 1);
+     patient.pendingAppointments.splice(indexp, 1);
+     
     patient.save();
-    console.log(patient.pendingAppointments)
+   
     doctor.pendingAppointments.splice(indexd, 1);
-    doctor.save();
-    console.log(doctor.pendingAppointments)
-    req.flash('success','Rendez-vous annulé')
+   doctor.save();
+   console.log(doctor.availabletimeslots)
+   if (Index2!==-1){
+    doctor.availabletimeslots[Index1].bookedTimes.splice(Index2,1)
+    console.log(doctor.availabletimeslots)
+     }
+  req.flash('success','Rendez-vous annulé')
+  
+       
   }
   else{
     req.flash('error','Une erreur est detectée')
