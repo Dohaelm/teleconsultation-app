@@ -64,7 +64,19 @@ const doctorSchema = new Schema({
       lowercase:true},
     experience: Number,
     hospitalAffiliation: String,
-    additionalInfo: String,
+    additionalInfo: [{
+        typeInfo: { 
+            type:String,
+            enum:['Congé','Disponibilité exceptionnelle', 'Non disponibilité exceptionnelle','Autre'],
+           
+    },
+    debut: Date, 
+    fin: Date,
+    contenu:{
+        type:String
+    }
+        
+}],
     appointments: [{
         patientEmail: String,
         appointmentDate: Date,

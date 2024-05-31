@@ -78,6 +78,14 @@
           <% }) %>
       </ul>
   </div>
+  <div class="additionalInfo">
+    <p class="title">Additional Infos</p>
+    <% if (doctor.additionalInfo && doctor.additionalInfo.length > 0) { %>
+        <% doctor.additionalInfo.forEach(info => { %>
+            <p><%= info.contenu %></p>
+        <% }) %>
+    <% } %>
+</div>
   <% } %>
  <% if (condition1) { %>
   
@@ -93,6 +101,7 @@
   
 
 </div>
+
 
 
 

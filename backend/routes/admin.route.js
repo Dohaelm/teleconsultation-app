@@ -134,7 +134,7 @@ router.post('/update-role', async (req, res, next) => {
         specialization:null,
         experience: null,
         hospitalAffiliation:null,
-        additionalInfo: null,
+        additionalInfo: [],
         appointments: [],
         pendingAppointments:[],
         availabilitytimeslots:[]
