@@ -57,7 +57,9 @@ const patientSchema=new Schema({
     appointments: [{
         doctorEmail: String,
         appointmentDate: Date,
-        reason: String
+        reason: String,
+        roomId:String
+
     }],
     pendingAppointments: [{
         doctorEmail: String,

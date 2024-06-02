@@ -80,7 +80,8 @@ const doctorSchema = new Schema({
     appointments: [{
         patientEmail: String,
         appointmentDate: Date,
-        reason: String
+        reason: String,
+        roomId:String
     }],
     pendingAppointments: [{
         patientEmail: String,

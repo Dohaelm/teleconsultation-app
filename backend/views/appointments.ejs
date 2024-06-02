@@ -93,7 +93,12 @@
                             <input type="hidden" name="doctorEmail" value="<%= appointment.doctorEmail %>" />
                             <input type="hidden" name="patientEmail" value="<%= patient.email%>" />
                             <button type="submit">Annuler</button>
+                            
                         </form>
+                        
+                           <a href="/user/videocall/<%=appointment.roomId %>"> <button>Entrer</button></a>
+                            
+                        
                     </td>
                 </tr>
             <% }) %>
@@ -121,11 +126,13 @@
                             <input type="hidden" name="doctorEmail" value="<%= doctor.email%>" />
                             <button type="submit">Annuler</button>
                         </form>
+                        <a href="/user/videocall/<%=appointment.roomId %>"> <button>Entrer</button></a>
                     </td>
                 </tr>
             <% }) %>
         </tbody>
     <% } %>
   </table>
+
 
 <%- include('./layouts/footer') %>

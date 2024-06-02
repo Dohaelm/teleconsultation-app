@@ -1,4 +1,7 @@
 const express = require('express');
+const path = require('path');
+const http = require('http');
+const socketIO = require('socket.io');
 const createHttpError = require('http-errors');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
@@ -12,6 +15,8 @@ const { roles } = require('./utils/constants');
 
 // Initialization
 const app = express();
+const server = http.createServer(app);
+const io = socketIO(server);
 app.use(morgan('dev'));
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
@@ -92,9 +97,41 @@ mongoose
   .then(() => {
     console.log('💾 connected...');
     // Listening for connections on the defined PORT
-    app.listen(PORT, () => console.log(`🚀 @ http://localhost:${PORT}`));
+    // app.listen(PORT, () => console.log(`🚀 @ http://localhost:${PORT}`));
   })
   .catch((err) => console.log(err.message));
+  io.on('connection', socket => {
+    console.log('A user connected');
+
+    socket.on('join', room => {
+        socket.join(room);
+        const clients = io.sockets.adapter.rooms.get(room);
+
+        if (clients.size === 2) {
+            socket.to(room).emit('ready');
+        }
+    });
+
+    socket.on('offer', offer => {
+        socket.to('room1').emit('offer', offer);
+    });
+
+    socket.on('answer', answer => {
+        socket.to('room1').emit('answer', answer);
+    });
+
+    socket.on('candidate', candidate => {
+        socket.to('room1').emit('candidate', candidate);
+    });
+
+    socket.on('disconnect', () => {
+      console.log('A user disconnected');
+      socket.broadcast.emit('disconnect-peer'); // Emit custom event
+  });
+});
+server.listen(3000, () => {
+  console.log(`🚀 @ http://localhost:${PORT}`);
+});
 
 // function ensureAuthenticated(req, res, next) {
 //   if (req.isAuthenticated()) {

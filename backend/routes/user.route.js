@@ -971,4 +971,13 @@ router.post('/delete-additional-info', async (req, res) => {
     return res.redirect('back');
   }
 });
+router.get('/videocall/:roomId',(req,res,next)=>{
+  try{
+        return    res.render('room',{roomId:req.params.roomId})
+  }
+  catch(error){
+     next(error) 
+
+  }
+})
 module.exports = router;
