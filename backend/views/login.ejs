@@ -1,23 +1,23 @@
 <%- include('./layouts/header') %>
-<form class="login" action="/auth/login" method="post" class="lg-form">
+<form class="login form" action="/auth/login" method="post" class="lg-form">
   <div class='container'>
-    <h1 id="id2">Login</h1>
+    <h1 id="id2">Se connecter</h1>
   </div>
   <div>
-    <label id="id1" for="email">Email/Username</label>
+    <label id="id1" for="email">Email</label>
     <input type="email" name="email" id="email" />
   </div>
   <div>
-    <label id="id1" for="password">Password</label>
+    <label id="id1" for="password">Mot de passe</label>
     <input type="password" name="password" id="password" />
   </div>
   <div>
-    <button class="btn submit">Login</button>
+    <button class="btn submit">Se connecter</button>
   </div>
   
   <div>
     <p>
-      Don't have an account? <span><a href="/auth/register">Register</a></span>
+      Vous n'avez pas encore de compte? <span><a href="/auth/register">S'inscrire</a></span>
     </p>
   </div>
 </form>

@@ -7,11 +7,11 @@
     <h1 id="id2">Profile</h1>
     <div class="profile-container">
       <div class="profile-line">
-        <p>First Name</p>
+        <p>Prénom</p>
         <p><%= person.firstName %></p>
       </div>
       <div class="profile-line">
-        <p>Last Name</p>
+        <p>Nom</p>
         <p><%= person.lastName %></p>
       </div>
       <div class="profile-line">
@@ -24,62 +24,70 @@
       </div>
       <% if (patient) { %>
         <div class="profile-line">
-          <p>Birthdate</p>
-          <pre><%= patient.birthdate %></pre>
+          <p>Date de naissance</p>
+          <% if (condition4) { %>
+            <p class="subtitle" name="birthdate" ><%= patient.birthdate.toLocaleDateString('en-GB') %></p>
+          <% } else { %>
+            <p class="subtitle" name="birthdate"><%= patient.birthdate %></p>
+          <% } %>
         </div>
         <div class="profile-line">
-          <p>City</p>
-          <pre><%= patient.city %></pre>
+          <p>Ville</p>
+          <p><%= patient.city %></p>
         </div>
         <div class="profile-line">
-          <p>Weight</p>
-          <pre><%= patient.weight %></pre>
+          <p>Poids en kg</p>
+          <p><%= patient.weight %></p>
         </div>
         <div class="profile-line">
-          <p>Height</p>
-          <pre><%= patient.height %></pre>
+          <p>Taille en cm</p>
+          <p><%= patient.height %></p>
         </div>
         <div class="profile-line">
-          <p>Bloodtype</p>
-          <pre><%= patient.bloodType %></pre>
+          <p>Groupe Sanguin</p>
+          <p><%= patient.bloodType %></p>
         </div>
       <% } else if (doctor) { %>  
         <div class="profile-line">
-          <p>City</p>
-          <pre><%= doctor.city %></pre>
+          <p>Ville</p>
+          <p><%= doctor.city %></p>
         </div>
         <div class="profile-line">
-          <p>Specialization</p>
-          <pre><%= doctor.specialization %></pre>
+          <p>Spécialité</p>
+          <p><%= doctor.specialization %></p>
         </div>
         <div class="profile-line">
-          <p>Years of experience</p>
-          <pre><%= doctor.experience %></pre>
+          <p>Années d'expérience</p>
+          <p><%= doctor.experience %></p>
         </div>
         <div class="profile-line">
-          <p>Availability</p>
+          <p>Disponibilité</p>
           <ul>
-            <% doctor.availability.forEach(slot => { %>
-                <% if (!slot.bookedBy) { %>
-                    <li>
-                       <p><%= slot.dayOfWeek %>   :   <%= slot.startTime %>-<%= slot.endTime %></p> 
-                        
-                    </li>
-                <% } %>
-            <% }) %>
-          </ul>
-        </div>
+            <% sortedAvailability.forEach(day => { %>
+              <li>
+                  <p><%= day.dayOfWeek %>:</p>
+                  <ul>
+                      <% for (let i = 0; i < day.startTimes.length; i++) { %>
+                          <li>
+                              <p><%= day.startTimes[i] %> - <%= day.endTimes[i] %></p>
+                          </li>
+                      <% } %>
+                  </ul>
+              </li>
+          <% }) %>
+      </ul>
+      </div>
       <% } %>
      <% if (condition1) { %>
       
-      <button class="edit-profile"><a href="/user/edit-profile">Edit Profile</a></button>
+      <button class="edit-profile"><a href="/user/edit-profile">Modifier Profile</a></button>
      <% } %>
      <% if (condition2) { %>
-      <button class="edit-profile"><a href="/admin/edit-profile-user/<%= person.id %>">Edit Profile</a></button>
+      <button class="edit-profile"><a href="/admin/edit-profile-user/<%= person.id %>">Modifier Profile</a></button>
       
      <% } %>
      <% if (condition3) { %>
-      <button> <a href="/user/booking/<%= doctor.id %>">Je prends un rendez-vous</a></button>
+      <button class="edit-profile"> <a href="/user/booking/<%= doctor.id %>">Je prends un rendez-vous</a></button>
      <% } %>
     </div>
   </div>

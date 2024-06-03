@@ -52,17 +52,11 @@ const doctorSchema = new Schema({
     availability:[{
         dayOfWeek: {
             type: String,
-            enum: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
+            enum: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+            unique: true
         },
-        startTime: {
-            type: String, // You can use a Date object if you need more precise time handling
-            required: true
-        },
-        endTime: {
-            type: String, // You can use a Date object if you need more precise time handling
-            
-        },
-        
+        startTimes: [String], // Array of start times
+        endTimes: [String]
        
     }],
     specialization:{

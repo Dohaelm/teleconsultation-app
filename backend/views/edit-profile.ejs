@@ -1,90 +1,118 @@
 <%- include('./layouts/header') %>  
 
-<h1 id="id2">Edit Profile</h1>
-<div class="profile">
-    <form action="/user/save" method="post">
-    <div>
-      <p class="title">First Name</p>
-      <input class="subtitle" name="firstName" value="<%= person.firstName %>">
-    </div>
-    <div>
-      <p class="title">Last Name</p>
-      <input class="subtitle" name="lastName" value="<%= person.lastName %>">
+<h1 id="id2">Modifier Profile</h1>
+<div class="profile-container1">
+  <div class="profile">
+    <form  action="/user/save" method="post">
+    <div class="flex">
+      <div class="margin">
+        <p class="title">Prénom</p>
+        <input class="subtitle" name="firstName" value="<%= person.firstName %>">
+      </div>
+      <div>
+        <p class="title">Nom</p>
+        <input class="subtitle" name="lastName" value="<%= person.lastName %>">
+      </div>
     </div>
     <div>
       <p class="title">Email</p>
       <input name="email" value="<%= person.email %>" readonly>
     </div>
+    <% if (!patient && !doctor) { %>
+      <button class="edit-profile" type="submit">Enregistrer</button>
+      <button class="cancel"><a href="/user/profile" >Annuler</a></button>
+    <%}%>
       
       <% if (patient) { %>
-        <div>
-          <p class="title">Birthdate</p>
-          <input class="subtitle" name="birthdate" value="<%= patient.birthdate %>">
+        <div class="flex">
+          <div class="margin">
+            <p class="title">Date de naissance</p>
+            <% if (condition4) { %>
+              <input class="subtitle" name="birthdate" value="<%= patient.birthdate.toLocaleDateString('en-GB') %>">
+            <% } else { %>
+              <input class="subtitle" name="birthdate" value="<%= patient.birthdate %>">
+            <% } %>
+          </div>
+          <div>
+            <p class="title">Ville</p>
+            <input class="subtitle" name="city" value="<%= patient.city %>">
+          </div>
         </div>
-        <div>
-          <p class="title">City</p>
-          <input class="subtitle" name="city" value="<%= patient.city %>">
+        <div class="flex">
+          <div class="margin">
+            <p class="title">Poids</p>
+            <input class="subtitle" name="weight" value="<%= patient.weight %>">
+          </div>
+          <div>
+            <p class="title">Taille</p>
+            <input class="subtitle" name="height" value="<%= patient.height %>">
+          </div>
         </div>
-        <div>
-          <p class="title">Weight</p>
-          <input class="subtitle" name="weight" value="<%= patient.weight %>">
-        </div>
-        <div>
-          <p class="title">Height</p>
-          <input class="subtitle" name="height" value="<%= patient.height %>">
-        </div>
-        <div>
-          <p class="title">Bloodtype</p>
+          <p class="title">Groupe Sanguin</p>
           <input class="subtitle" name="bloodType" value="<%= patient.bloodtype %>">
-          <button class="edit-profile" type="submit">Save</button>
-      <button class="cancel"><a href="/user/profile" >cancel</a></button>
+          <button class="edit-profile" type="submit">Enregistrer</button>
+      <button class="cancel"><a href="/user/profile" >Annuler</a></button>
         </div>
       <% } else if (doctor) { %>  
-        <div>
-          <p class="title">City</p>
-          <input class="subtitle" name="city" value="<%= doctor.city %>">
+        <div class="flex">
+          <div class="margin">
+            <p class="title">Ville</p>
+            <input class="subtitle" name="city" value="<%= doctor.city %>">
+          </div>
+          <div>
+            <p class="title">Spécialité</p>
+            <input class="subtitle" name="specialization" value="<%= doctor.specialization %>">
+          </div>
         </div>
         <div>
-          <p class="title">Specialization</p>
-          <input class="subtitle" name="specialization" value="<%= doctor.specialization %>">
-        </div>
-        <div>
-          <p class="title">Years of experience</p>
+          <p class="title">Années d'expérience</p>
           <input class="subtitle" name="experience" value="<%= doctor.experience %>">
         </div>
        
         <div id="availabilityInputs">
-          <p class="title">Availability</p>
+          <p class="title">Disponibilité</p>
           <!-- Day of the Week Selection -->
-          <label for="dayOfWeek">Choose Day of the Week:</label>
+          <div class="flex">
+            <label for="dayOfWeek"><i id="i" class="fa-regular fa-calendar"></i>Choisir un jour de la semaine:</label>
           <select id="dayOfWeek" name="daysOfWeek[]">
               <% const daysOfWeek = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']; %>
               <% daysOfWeek.forEach(day => { %>
                   <option value="<%= day %>"><%= day %></option>
               <% }); %>
           </select>
+          </div>
   
           <!-- Start Time Input -->
-          <label for="startTime">Start Time:</label>
-          <select id="startTime" name="startTimes[]">
+          <div class="flex">
+            <label for="startTime"><i id="i" class="fa-regular fa-clock"></i>Horaire de début:</label>
+            <select id="startTime" name="startTimes[]">
               <option value="00:00">00:00</option> <!-- Special case for midnight -->
-              <% for (let hour = 1; hour <= 23; hour++) { %>
-                  <% const paddedHour = hour.toString().padStart(2, '0'); %>
-                  <option value="<%= paddedHour %>:00"><%= paddedHour %>:00</option>
+              <% for (let hour = 0; hour < 24; hour++) { %>
+                  <% for (let minute = 0; minute < 60; minute += 30) { %>
+                      <% const paddedHour = hour.toString().padStart(2, '0'); %>
+                      <% const paddedMinute = minute.toString().padStart(2, '0'); %>
+                      <option value="<%= paddedHour %>:<%= paddedMinute %>"><%= paddedHour %>:<%= paddedMinute %></option>
+                  <% } %>
               <% } %>
           </select>
+          </div>
   
-          <label for="endTime">End Time:</label>
-          <select id="endTime" name="endTimes[]">
+          <div class="flex">
+            <label for="endTime"><i id="i" class="fa-regular fa-clock"></i>Horaire de fin:</label>
+            <select id="endTime" name="endTimes[]">
               <option value="00:00">00:00</option> <!-- Special case for midnight -->
-              <% for (let hour = 1; hour <= 23; hour++) { %>
-                  <% const paddedHour = hour.toString().padStart(2, '0'); %>
-                  <option value="<%= paddedHour %>:00"><%= paddedHour %>:00</option>
+              <% for (let hour = 0; hour < 24; hour++) { %>
+                  <% for (let minute = 0; minute < 60; minute += 30) { %>
+                      <% const paddedHour = hour.toString().padStart(2, '0'); %>
+                      <% const paddedMinute = minute.toString().padStart(2, '0'); %>
+                      <option value="<%= paddedHour %>:<%= paddedMinute %>"><%= paddedHour %>:<%= paddedMinute %></option>
+                  <% } %>
               <% } %>
           </select>
+          </div>
   
           <!-- Add Button -->
-          <button type="button" onclick="addAvailability()">Add Availability</button>
+          <button class="add-availability" type="button" onclick="addAvailability()"><i class="fa-solid fa-plus"></i>Ajouter disponibilité</button>
       </div>
   
       <!-- Selected Availability Display -->
@@ -94,28 +122,34 @@
       <div id="checkboxese"></div>
   
      
-      <button class="edit-profile" type="submit">Save</button>
-      <button class="cancel"><a href="/user/profile" >cancel</a></button>
+      <button class="edit-profile" type="submit">Enregistrer</button>
+      <button class="cancel"><a href="/user/profile" >Annuler</a></button>
     </form>
     <div>
       
-      <div>
+      <div >
       
         <ul id="availabilityList">
-            <% doctor.availability.forEach(slot => { %>
-                <% if (!slot.bookedBy) { %>
-                    <li>
-                      <span><%= slot.dayOfWeek %> : <%= slot.startTime %> - <%= slot.endTime %></span>
-                      
-                      <form action="/user/delete-slot" method="post" onsubmit="return confirm('Are you sure you want to delete this user?')">
-                        <input type="hidden" name="id" value="<%= doctor.email %>" />
-                        <input type="hidden" name="slotId" value="<%= slot._id %>" />
-                        <button class="deleteSlot">Delete</button>
-                    </form>
-                           
-                    </li>
-                <% } %>
-            <% }) %>
+
+          <% sortedAvailability.forEach((slot, index) => { %>
+            <li>
+                <span><%= slot.dayOfWeek %> :</span>
+                <ul>
+                    <% for (let i = 0; i < slot.startTimes.length; i++) { %>
+                        <li>
+                          <form class="deleteSlotForm" action="/user/delete-slot" method="post">
+                              <span><%= slot.startTimes[i] %> - <%= slot.endTimes[i] %></span>
+                                <input type="hidden" name="id" value="<%= doctor.email %>" />
+                                <input type="hidden" name="slotId" value="<%= slot._id %>" />
+                                <input type="hidden" name="startTime" value="<%= slot.startTimes[i] %>" />
+                                <input type="hidden" name="endTime" value="<%= slot.endTimes[i] %>" />
+                                <button class="deleteSlot">Delete</button>
+                            </form>
+                        </li>
+                    <% } %>
+                </ul>
+            </li>
+         <% }) %>
         </ul>
     </div>
     </ul>
@@ -191,7 +225,11 @@
       }
   </script>
       <% } %>
+  
+    
+  
      
+</div>
 </div>          
       
 <%- include('./layouts/footer') %>

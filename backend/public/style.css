@@ -272,8 +272,8 @@ header {
 
 .footer__bar {
   background-color: var(--primary-color);
-  /* position: fixed;
-  bottom: 0; */
+  position: fixed;
+  bottom: 0;
   width: 100%;
 }
 
@@ -304,7 +304,7 @@ header {
 
 /* form styling */
 
-form {
+.form {
   border: 3px solid #12ac8e;
   border-radius: 10px;
   display: block;
@@ -337,6 +337,18 @@ input{
   margin-bottom: 10px;
 }
 
+textarea{
+  display: block;
+  width: 100%;
+  color: #757478;
+  padding: 5px 8px;
+  font-size: 16px;
+  border: 1px solid #0d846c;
+  border-radius: 5px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
 .submit{
   margin-left:  auto;
   margin-right:  auto;
@@ -348,7 +360,7 @@ input{
 
 form p {
   margin-top: 10px;
-  text-align: center;
+  
   font-size: 15px;
 }
 
@@ -502,6 +514,8 @@ ul.messages * {
   background-color: #0d846c;
 }
 
+
+
 /* users-table styling */
 .table {
   width: 100%;
@@ -544,16 +558,16 @@ ul.messages * {
 }
 
 
-.update{
+.edit-profile{
+  padding: 6px 10px;
   color: white;
-  background-color: #12ac8e;
+  background-color:#12ac8e;
   border: none;
-  padding: 8px;
-  margin-left: 10px;
   border-radius: 5px;
+  
 }
 
-.update:hover{
+.edit-profile:hover{
   background-color: #0d846c;
 }
 
@@ -584,12 +598,21 @@ ul.messages * {
 }
 
 .profile{
-  text-align: center;
+  
+  
+  border: 3px solid #12ac8e;
+  border-radius: 10px;
+  display: block;
+  width: 30%;
+  padding: 10px 30px;
+  
+}
+
+.profile-container1{
   display: flex;
   justify-content: center;
   align-items: center;
   margin-bottom: 320px;
-  
 }
 
 h1{
@@ -605,11 +628,13 @@ h1{
 }
 
 /* barre de recherche */
-/* Style de base pour le formulaire */
+
 #search {
   display: flex;
   align-items: center;
+  justify-content: center;
   border: none;
+  padding-bottom: 20px;
 }
 
 /* Style pour le champ de recherche */
@@ -622,7 +647,7 @@ h1{
 }
 
 /* Style pour le bouton de recherche */
-#search button[type="submit"] {
+#search button{
   padding: 8px 12px;
   background-color: #12ac8e; /* Couleur de fond du bouton */
   color: white; /* Couleur du texte du bouton */
@@ -632,14 +657,72 @@ h1{
 }
 
 /* Style pour le texte de placeholder */
-#search input[type="text"]::placeholder {
+#search input::placeholder {
   color: #aaa; /* Couleur du texte de placeholder */
 }
 
+.align button{
+  display:inline;
+}
+
+.add-availability{
+  border: none;
+  border-radius: 4px;
+  padding: 8px;
+  margin-left:20px;
+  background-color: #fb923c;
+  color: white;
+}
+
+.add-availability:hover{
+  background-color: #f9882c;
+}
+
+#i {
+  padding-right: 5px;
+} 
+
+/* choosing appointments styling */
+
+#availabilityInputs select{
+  display: inline !important;
+
+}
+
+.flex{
+  display: flex;
+  align-items: center;
+}
+
+.flex select{
+  margin-top:17px ;
+  margin-left: 10px;
+
+}
+
+.content h2{
+  text-align: center;
+}
+
+.booking{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.center{
+  text-align: center;
+}
+
+.margin{
+  margin-right: 50px;
+}
 
 
-
-
+#availabilityList{
+  margin-left: 50px;
+}
 
 
 

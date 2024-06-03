@@ -1,26 +1,31 @@
 
 <%- include('./layouts/header') %>
+<h2 id="id2" class="center">Prise de rendez-vous</h2>
+<div class="booking">
+    
+    <form class="form" action="/user/book-appointment" method="POST" class="lg-form">
+        <div>
+            <label for="patientEmail">Email Patient:</label>
+            <input type="email" id="patientEmail" name="patientEmail" value="<%= patient.email %>" >
+        </div>
+        <div>
+            <label for="doctorEmail">Email Médecin:</label>
+            <input type="email" id="doctorEmail" name="doctorEmail" value="<%= doctor.email %>" >
+        </div>
+        <div>
+            <label for="date">Date de Consultation:</label>
+            <input type="datetime-local" id="date" name="date" >
+        </div>
+        <div>
+            <label for="reason">Motif de Consultation:</label>
+            <textarea id="reason" name="reason" rows="4" ></textarea>
+        </div>
+    <div class="align">
 
-<form action="/user/book-appointment" method="POST" class="lg-form">
-    <div>
-        <label for="patientEmail">Patient's Email:</label>
-        <input type="email" id="patientEmail" name="patientEmail" value="<%= patient.email %>" >
-    </div>
-    <div>
-        <label for="doctorEmail">Doctor's Email:</label>
-        <input type="email" id="doctorEmail" name="doctorEmail" value="<%= doctor.email %>" >
-    </div>
-    <div>
-        <label for="date">Date of Consultation:</label>
-        <input type="datetime-local" id="date" name="date" >
-    </div>
-    <div>
-        <label for="reason">Reason for Consultation:</label>
-        <textarea id="reason" name="reason" rows="4" ></textarea>
-    </div>
-   
-    <button type="submit">Confirmer</button>
-    <button ><a href="/user/doctors"></a>Annuler</button>
-</form>
+        <button class="edit-profile" type="submit">Confirmer</button>
+        <button class="cancel" ><a href="/user/doctors"></a>Annuler</button>
+        </div>
+    </form>
+</div>
 
 <%- include('./layouts/footer') %>

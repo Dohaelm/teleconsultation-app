@@ -4,12 +4,12 @@
   <%- include ('layouts/sidebar') %>
 
   <div class="content">
-    <h1 id="id2" class="table">Manage Users</h1>
+    <h1 id="id2" class="table">Gestion d'utilisateurs</h1>
     <table class="table">
       <thead>
-        <th>id</th>
-        <th>email</th>
-        <th>role</th>
+        <th>Id</th>
+        <th>Email</th>
+        <th>Role</th>
         <th>Action</th>
       </thead>
       <tbody>
@@ -31,7 +31,7 @@
                 <option value="PATIENT" <%= user.role === 'PATIENT' ? 'selected' : '' %>>Patient</option>
               </select>
               <!-- <input class="update" type="submit" value="update"> -->
-              <button type="submit" class="update"><i class="fa-regular fa-pen-to-square"></i></button>
+              <button type="submit" class="edit-profile"><i class="fa-regular fa-pen-to-square"></i></button>
             </form>
           </td>
           <td> <!-- New column for actions -->

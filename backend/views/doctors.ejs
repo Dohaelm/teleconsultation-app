@@ -5,17 +5,17 @@
     <h1 id="id2" class="table">Medecins</h1>
 
     <form id="search" action="/user/doctors" method="GET">
-        <input type="text" name="search" placeholder="Search by Name, Specialization, or City">
-        <button type="submit">Search</button>
+        <input type="text" name="search" placeholder="Recherchez par nom, spécialité, ou ville">
+        <button type="submit">Rechercher</button>
     </form>
 
     <table class="table">
       <thead>
-        <th>Name</th>
+        <th>Nom</th>
       
-        <th>email</th>
-        <th>specialization</th>
-        <th>city</th>
+        <th>Email</th>
+        <th>Spécialité</th>
+        <th>Ville</th>
       </thead>
       <tbody>
         <% doctors.forEach(doctor => { %>
