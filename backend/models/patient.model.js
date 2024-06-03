@@ -58,7 +58,9 @@ const patientSchema=new Schema({
         doctorEmail: String,
         appointmentDate: Date,
         reason: String,
-        roomId:String
+        roomId:String,
+        doctorpresent:Boolean,
+        patientpresent:Boolean
 
     }],
     pendingAppointments: [{
@@ -84,7 +86,11 @@ patientSchema.pre('save',async function(){
     }
 
 } );
-
+patientSchema.methods.setAllAppointmentsAbsent = function () {
+    this.appointments.forEach(appointment => {
+      appointment.patientpresent = false;
+    });
+  };
 
 const Patient=model('Patient',patientSchema);
 module.exports=Patient;

@@ -7,6 +7,7 @@ const Doctor=require('../models/doctor.model')
 const { roles } = require('../utils/constants');
 const { ensureLoggedOut, ensureLoggedIn } = require('connect-ensure-login');
 const moment = require('moment');
+const { v4: uuidv4 } = require('uuid');
 router.get('/profile', async (req, res) => {
   try {
     let patient=null;
@@ -27,6 +28,8 @@ router.get('/profile', async (req, res) => {
     if (person.role === roles.patient) {
       // Assuming you have retrieved the patient data from the database
        patient = await Patient.findOne({ email: req.user.email });
+       patient.setAllAppointmentsAbsent();
+       await patient.save();
        if(patient.birthdate){
         condition4=true;
 
@@ -40,6 +43,8 @@ router.get('/profile', async (req, res) => {
      if (person.role === roles.doctor) {
       // Assuming you have retrieved the doctor data from the database
        doctor = await Doctor.findOne({ email: req.user.email });
+       doctor.setAllAppointmentsAbsent();
+       await doctor.save();
        const daysOfWeekOrder = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
 
 // Sort the availability array based on the order of daysOfWeekOrder
@@ -204,10 +209,10 @@ router.post('/save',async(req,res,next)=>{
           for (let i = 0; i < daysOfWeek.length; i++) {
 
             
-             const existingIndex = doctor.availability.findIndex(slot => slot.dayOfWeek === daysOfWeek[i]);
+             const existingIndex = doctor.availability.findIndex(slot => slot.dayOfWeek == daysOfWeek[i]);
            
          
-            const existingIndex2 = doctor.availabletimeslots.findIndex(slot => slot.dayName === daysOfWeek[i]);
+            const existingIndex2 = doctor.availabletimeslots.findIndex(slot => slot.dayName == daysOfWeek[i]);
            
            
            
@@ -269,7 +274,7 @@ doctor.availabletimeslots[existingIndex2].availableTimes.sort((time1, time2) => 
                     startTimes: [startTimes[i]],
                     endTimes: [endTimes[i]]
                 };
-              if(existingIndex2===-1){
+              if(existingIndex2==-1){
                 const availabilityTimeslot={
                   dayName: daysOfWeek[i],
                   availableTimes:dividingTimeSlots(startTimes[i],endTimes[i]),
@@ -473,6 +478,33 @@ router.post('/delete-slot', async (req, res, next) => {
 
 router.get('/doctors', async (req, res, next) => {
   try {
+    const person= await User.findOne({ email: req.user.email })
+  
+  
+    
+   
+
+    
+    if (person.role === roles.patient) {
+      
+       const patient = await Patient.findOne({ email: req.user.email });
+       patient.setAllAppointmentsAbsent();
+       await patient.save();
+       
+
+       }
+    
+      
+      // Render the profile page and pass user and patient data to the template
+     
+
+    // Check if the user has the 'doctor' role
+     if (person.role === roles.doctor) {
+      // Assuming you have retrieved the doctor data from the database
+       const doctor = await Doctor.findOne({ email: req.user.email });
+       doctor.setAllAppointmentsAbsent();
+       await doctor.save();}
+
       let doctors = await Doctor.find();
       const searchQuery = req.query.search || '';
       if (req.query.search) {
@@ -534,6 +566,8 @@ router.get('/appointments',async(req,res,next)=>{
     
     if(person.role===roles.patient){
       patient= await Patient.findOne({email:req.user.email})
+      patient.setAllAppointmentsAbsent();
+      await patient.save();
       
    
       condition1=true;
@@ -543,6 +577,8 @@ router.get('/appointments',async(req,res,next)=>{
    
     if(person.role===roles.doctor){
      doctor= await Doctor.findOne({email:req.user.email})
+     doctor.setAllAppointmentsAbsent();
+     await doctor.save();
    
      condition2=true;
      
@@ -689,6 +725,7 @@ router.post('/accept-app',async(req,res,next)=>{
   try {
     let indexd;
     let indexp;
+    const roomId=uuidv4();
   
     for(i=0;i<doctor.pendingAppointments.length;i++){
       console.log(doctor.pendingAppointments[i])
@@ -711,11 +748,20 @@ router.post('/accept-app',async(req,res,next)=>{
   
 
    if (indexp !== -1 && indexd!==-1) {
-
-     patient.appointments.push(patient.pendingAppointments[indexp]);
+     const appP={doctorEmail:patient.pendingAppointments[indexp].doctorEmail,appointmentDate:patient.pendingAppointments[indexp].appointmentDate
+      ,reason:patient.pendingAppointments[indexp].reason, roomId:roomId,doctorpresent:false,patientpresent:false
+     }
+     patient.appointments.push(appP);
      patient.pendingAppointments.splice(indexp, 1);
         patient.save();
-        doctor.appointments.push(doctor.pendingAppointments[indexd]);
+        const appD={patientEmail:doctor.pendingAppointments[indexd].patientEmail,
+          appointmentDate:doctor.pendingAppointments[indexd].appointmentDate,
+          reason:doctor.pendingAppointments[indexd].reason,
+          roomId:roomId,
+          doctorpresent:false,
+          patientpresent:false
+        }
+        doctor.appointments.push(appD);
         doctor.pendingAppointments.splice(indexd, 1);
       doctor.save();
       
@@ -971,10 +1017,58 @@ router.post('/delete-additional-info', async (req, res) => {
     return res.redirect('back');
   }
 });
-router.get('/videocall/:roomId',(req,res,next)=>{
+router.get('/videocall/:roomId',async(req,res,next)=>{
   try{
-        return    res.render('room',{roomId:req.params.roomId})
-  }
+    
+    const person= await User.findOne({ email: req.user.email }) 
+    const role=person.role
+    console.log(person)
+  
+   
+    if(role===roles.doctor){
+     const doctor= await  Doctor.findOne({email: req.user.email})
+     console.log(doctor)
+     const Index= doctor.appointments.findIndex(app=>app.roomId==req.params.roomId)
+    if(Index!==-1){
+      if (! doctor.appointments[Index].doctorpresent){
+         doctor.appointments[Index].doctorpresent=true;
+       await  doctor.save()
+       return res.render('room',{roomId:req.params.roomId})
+     }
+     
+      else{
+        req.flash('error','Not allowed to enter')
+           return    res.render('index')} 
+       
+     
+     }
+    }
+    
+    
+
+
+    
+     else if (role===roles.patient){
+      const patient=  await Patient.findOne({email: req.user.email})
+       const Index=patient.appointments.findIndex(app=>app.roomId==req.params.roomId)
+       if(Index!==-1){
+         if(!patient.appointments[Index].patientpresent){
+        patient.appointments[Index].patientpresent=true;
+        await patient.save();
+           return res.render('room',{roomId:req.params.roomId})
+
+       }
+       else{
+        req.flash('error','Not allowed to enter')
+           return    res.render('index')} 
+       
+     }
+     }
+     }
+     
+    
+    
+  
   catch(error){
      next(error) 
 

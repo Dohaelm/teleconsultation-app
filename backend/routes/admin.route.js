@@ -64,95 +64,76 @@ router.post('/update-role', async (req, res, next) => {
   try {
     const { id, role } = req.body;
 
-    // Checking for id and roles in req.body
     if (!id || !role) {
       req.flash('error', 'Invalid request');
       return res.redirect('back');
     }
 
-    // Check for valid mongoose objectID
     if (!mongoose.Types.ObjectId.isValid(id)) {
       req.flash('error', 'Invalid id');
       return res.redirect('back');
     }
 
-    // Check for Valid role
     const rolesArray = Object.values(roles);
     if (!rolesArray.includes(role)) {
       req.flash('error', 'Invalid role');
       return res.redirect('back');
     }
 
-    // Admin cannot remove himself/herself as an admin
     if (req.user.id === id && role !== roles.admin) {
-      req.flash(
-        'error',
-        'Admins cannot remove themselves from Admin, ask another admin.'
-      );
+      req.flash('error', 'Admins cannot remove themselves from Admin, ask another admin.');
       return res.redirect('back');
     }
 
-    // Fetch user details
     const person = await User.findById(id);
 
     if (!person) {
       req.flash('error', 'User not found');
       return res.redirect('back');
     }
-    if (person.role===role) {
+    if (person.role === role) {
       req.flash('warning', `User is already ${role}`);
       return res.redirect('back');
     }
 
-    // Update user's role
     person.role = role;
 
-    // Handle scenarios based on the updated role
     switch (role) {
       case roles.admin:
-        // If the role is updated to admin, remove user from Doctor or Patient model if exists
         await Doctor.findOneAndDelete({ email: person.email });
         await Patient.findOneAndDelete({ email: person.email });
         break;
       case roles.doctor:
-        // If the role is updated to doctor, remove user from Patient model if exists
         await Patient.findOneAndDelete({ email: person.email });
-        // Create new Doctor model with user details
         await Doctor.create({
           _id: person._id,
           firstName: person.firstName,
           lastName: person.lastName,
           email: person.email,
           password: person.password,
-          birthdate:null,
-        
-        city: null,
-        address: null,
-        phoneNumber: null,
-        nationalID: null,
-       availability: [],
-        specialization:null,
-        experience: null,
-        hospitalAffiliation:null,
-        additionalInfo: [],
-        appointments: [],
-        pendingAppointments:[],
-        availabilitytimeslots:[]
-        
-         // Ensure password is hashed
-          // Add other necessary fields for Doctor model initialization
+          birthdate: null,
+          city: null,
+          address: null,
+          phoneNumber: null,
+          nationalID: null,
+          availability: [], // or other appropriate default values
+          specialization: null,
+          experience: null,
+          hospitalAffiliation: null,
+          additionalInfo: [],
+          appointments: [],
+          pendingAppointments: [],
+          availabilitytimeslots: []
         });
         break;
       case roles.patient:
-        // If the role is updated to patient, remove user from Doctor model if exists
         await Doctor.findOneAndDelete({ email: person.email });
-        // Create new Patient model with user details
         await Patient.create({
           _id: person._id,
           firstName: person.firstName,
           lastName: person.lastName,
-          email:person.email,
-          password: person.password, 
+          email: person.email,
+          password: person.password,
           birthdate: null,
           city: null,
           address: null,
@@ -163,18 +144,17 @@ router.post('/update-role', async (req, res, next) => {
           bloodType: null,
           diseases: null,
           appointments: [],
-          pendingAppointments:[]
+          pendingAppointments: []
         });
         break;
       case roles.attente:
-          await Doctor.findOneAndDelete({email:person.email})
-          await Patient.findOneAndDelete({email:person.email})
-          break;
+        await Doctor.findOneAndDelete({ email: person.email });
+        await Patient.findOneAndDelete({ email: person.email });
+        break;
       default:
         break;
     }
 
-    // Save updated user details
     await person.save();
 
     req.flash('info', `Updated role for ${person.email} to ${role}`);
@@ -183,6 +163,7 @@ router.post('/update-role', async (req, res, next) => {
     next(error);
   }
 });
+
 router.post('/delete-user', async (req, res, next) => {
   try {
     const userId = req.body.id; 

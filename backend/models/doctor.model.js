@@ -53,7 +53,7 @@ const doctorSchema = new Schema({
         dayOfWeek: {
             type: String,
             enum: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
-            unique: true
+            
         },
         startTimes: [String], // Array of start times
         endTimes: [String]
@@ -81,7 +81,9 @@ const doctorSchema = new Schema({
         patientEmail: String,
         appointmentDate: Date,
         reason: String,
-        roomId:String
+        roomId:String,
+        doctorpresent:Boolean,
+        patientpresent:Boolean
     }],
     pendingAppointments: [{
         patientEmail: String,
@@ -114,6 +116,11 @@ doctorSchema.pre('save',async function(){
     }
 
 } );
+doctorSchema.methods.setAllAppointmentsAbsent = function () {
+    this.appointments.forEach(appointment => {
+      appointment.doctorpresent = false;
+    });
+  };
 
 
 const Doctor = model('Doctor', doctorSchema);

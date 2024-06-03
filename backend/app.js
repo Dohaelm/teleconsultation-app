@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+
 const http = require('http');
 const socketIO = require('socket.io');
 const createHttpError = require('http-errors');
@@ -12,6 +13,9 @@ const passport = require('passport');
 const connectMongo = require('connect-mongo');
 const { ensureLoggedIn } = require('connect-ensure-login');
 const { roles } = require('./utils/constants');
+const Patient=require('./models/patient.model')
+const User=require('./models/user.model')
+const Doctor=require('./models/doctor.model')
 
 // Initialization
 const app = express();
@@ -126,7 +130,13 @@ mongoose
 
     socket.on('disconnect', () => {
       console.log('A user disconnected');
-      socket.broadcast.emit('disconnect-peer'); // Emit custom event
+      socket.broadcast.emit('disconnect-peer');
+      
+
+        // Handle updating the user's presence status in the database based on their role
+        // (Your logic for updating presence status goes here...)
+   
+       // Emit custom event
   });
 });
 server.listen(3000, () => {
