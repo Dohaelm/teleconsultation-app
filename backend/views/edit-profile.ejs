@@ -120,44 +120,164 @@
       <div id="checkboxesd"></div>
       <div id="checkboxest"></div>
       <div id="checkboxese"></div>
-  
-     
-      <button class="edit-profile" type="submit">Enregistrer</button>
-      <button class="cancel"><a href="/user/profile" >Annuler</a></button>
-    </form>
-    <div>
+      <p class="title">Additional information</p>
+     <div class="additionalInfo">
+      <label for="typeInfo">Type d'information :</label>
+      <select id="typeInfo" name="typeInfo"  >
+
+          <option value="">Sélectionner une option</option>
+          <option value="Congé">Congé</option>
+          <option value="Disponibilité exceptionnelle">Disponibilité exceptionnelle</option>
+          <option value="Non disponibilité exceptionnelle">Non disponibilité exceptionnelle</option>
+          <option value="Autre">Autre</option>
+      </select>
+      <br>
+      <div id="dateTimeFields">
+      <label for="debut">Début</label>
+      <input type="date" name="debut" id="debut">
       
-      <div >
+      <label for="fin">fin</label>
+      <input type="date" name="fin" id="fin">
+    </div>
+        
+        <div id="dateField" style="display: none;">
+          <label for="date">Date</label>
+          <input type="date" name="date" id="date">
+          <label for="debut">De</label>
+          <select id="time" name="timeStart">
+            <option value="">Sélectionnez un horaire</option>
+            <option value="00:00">00:00</option> <!-- Special case for midnight -->
+            <% for (let hour = 0; hour < 24; hour++) { %>
+                <% for (let minute = 0; minute < 60; minute += 30) { %>
+                    <% const paddedHour = hour.toString().padStart(2, '0'); %>
+                    <% const paddedMinute = minute.toString().padStart(2, '0'); %>
+                    <option value="<%= paddedHour %>:<%= paddedMinute %>"><%= paddedHour %>:<%= paddedMinute %></option>
+                <% } %>
+            <% } %>
+        </select>
+          <label for="fin">à</label>
+          <select id="time" name="timeEnd">
+            <option value="">Sélectionnez un horaire</option>
+            <option value="00:00">00:00</option> <!-- Special case for midnight -->
+            <% for (let hour = 0; hour < 24; hour++) { %>
+                <% for (let minute = 0; minute < 60; minute += 30) { %>
+                    <% const paddedHour = hour.toString().padStart(2, '0'); %>
+                    <% const paddedMinute = minute.toString().padStart(2, '0'); %>
+                    <option value="<%= paddedHour %>:<%= paddedMinute %>"><%= paddedHour %>:<%= paddedMinute %></option>
+                <% } %>
+            <% } %>
+        </select>
+      </div>
+     <div id="contenu" style="display: none;">
+      <label for="contenu" >Contenu</label>
+      
+      <input type="text" name="contenu">
+    </div>
+     </div>
+      <button class="save" type="submit">Save</button>
+      <button class="cancel"><a href="/user/profile" >cancel</a></button>
+    </form>
+    <div><% if (doctor.availability.length>0) { %>
+      <p class="title">Supprimer des disponibilités</p>
+    <% } %>
+     
+      <div> 
       
         <ul id="availabilityList">
-
           <% sortedAvailability.forEach((slot, index) => { %>
-            <li>
-                <span><%= slot.dayOfWeek %> :</span>
-                <ul>
-                    <% for (let i = 0; i < slot.startTimes.length; i++) { %>
-                        <li>
-                          <form class="deleteSlotForm" action="/user/delete-slot" method="post">
-                              <span><%= slot.startTimes[i] %> - <%= slot.endTimes[i] %></span>
-                                <input type="hidden" name="id" value="<%= doctor.email %>" />
-                                <input type="hidden" name="slotId" value="<%= slot._id %>" />
-                                <input type="hidden" name="startTime" value="<%= slot.startTimes[i] %>" />
-                                <input type="hidden" name="endTime" value="<%= slot.endTimes[i] %>" />
-                                <button class="deleteSlot">Delete</button>
-                            </form>
-                        </li>
-                    <% } %>
-                </ul>
-            </li>
-         <% }) %>
-        </ul>
+              <li>
+                  <span><%= slot.dayOfWeek %> :</span>
+                  <ul>
+                      <% for (let i = 0; i < slot.startTimes.length; i++) { %>
+                          <li>
+                            <form class="deleteSlotForm" action="/user/delete-slot" method="post">
+                                <span><%= slot.startTimes[i] %> - <%= slot.endTimes[i] %></span>
+                                  <input type="hidden" name="id" value="<%= doctor.email %>" />
+                                  <input type="hidden" name="slotId" value="<%= slot._id %>" />
+                                  <input type="hidden" name="startTime" value="<%= slot.startTimes[i] %>" />
+                                  <input type="hidden" name="endTime" value="<%= slot.endTimes[i] %>" />
+                                  <button class="deleteSlot">Delete</button>
+                              </form>
+                          </li>
+                      <% } %>
+                  </ul>
+              </li>
+          <% }) %>
+      </ul>
     </div>
     </ul>
     </div>
+    <% if (doctor.additionalInfo.length>0) { %>
+      <p class="title"> Supprimer des informations supplémentaires</p>
+    <% } %>
+    
+    <div class="additionalInfo">
+   
+      <% if (doctor.additionalInfo && doctor.additionalInfo.length > 0) { %>
+          <ul id="additionalInfoList">
+              <% doctor.additionalInfo.forEach((info, index) => { %>
+                  <li>
+                      <form class="deleteAdditionalInfoForm" action="/user/delete-additional-info" method="post">
+                          
+                          <span>Contenu: <%= info.contenu %></span>
+                          <input type="hidden" name="doctorEmail" value="<%= doctor.email %>" />
+                          <input type="hidden" name="additionalInfoId" value="<%= info._id %>" />
+                          <button class="deleteAdditionalInfo" type="submit">Delete</button>
+                      </form>
+                  </li>
+              <% }) %>
+          </ul>
+      <% } %>
   </div>
+  </div>
+ 
   
   <script>
+document.getElementById('typeInfo').addEventListener('change', function() {
+        const typeInfo = this.value;
+        const dateTimeFields = document.getElementById('dateTimeFields');
+        const dateField = document.getElementById('dateField');
+        const contenu=document.getElementById('contenu');
+        if (typeInfo === 'Congé') {
+            dateTimeFields.style.display = 'block';
+            dateField.style.display = 'none';
+            contenu.style.display='none';
+        }
+        else if(typeInfo==='Autre'){
 
+         dateTimeFields.style.display = 'none';
+           dateField.style.display = 'none';
+           contenu.style.display='block';
+                 } 
+        else {
+            dateTimeFields.style.display = 'none';
+            dateField.style.display = 'block';
+            contenu.style.display='none';
+        }
+    });
+
+    // Initialize the fields on page load in case a type is pre-selected
+    document.addEventListener('DOMContentLoaded', function() {
+        const typeInfo = document.getElementById('typeInfo').value;
+        const dateTimeFields = document.getElementById('dateTimeFields');
+        const dateField = document.getElementById('dateField');
+
+        if (typeInfo === 'Congé') {
+            dateTimeFields.style.display = 'block';
+            dateField.style.display = 'none';
+            contenu.style.display='none';
+        }
+        else if(typeInfo==='Autre'){
+
+          dateTimeFields.style.display = 'none';
+            dateField.style.display = 'none';
+            contenu.style.display='block';
+        } else {
+            dateTimeFields.style.display = 'none';
+            dateField.style.display = 'block';
+            contenu.style.display='none';
+        }
+    });
     
 
     function addAvailability() {
@@ -223,6 +343,10 @@
          
           
       }
+      
+
+
+
   </script>
       <% } %>
   

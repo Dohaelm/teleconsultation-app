@@ -53,7 +53,7 @@ const doctorSchema = new Schema({
         dayOfWeek: {
             type: String,
             enum: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
-            unique: true
+            
         },
         startTimes: [String], // Array of start times
         endTimes: [String]
@@ -64,17 +64,45 @@ const doctorSchema = new Schema({
       lowercase:true},
     experience: Number,
     hospitalAffiliation: String,
-    additionalInfo: String,
+    additionalInfo: [{
+        typeInfo: { 
+            type:String,
+            enum:['Congé','Disponibilité exceptionnelle', 'Non disponibilité exceptionnelle','Autre'],
+           
+    },
+    debut: Date, 
+    fin: Date,
+    contenu:{
+        type:String
+    }
+        
+}],
     appointments: [{
         patientEmail: String,
         appointmentDate: Date,
-        reason: String
+        reason: String,
+        roomId:String,
+        doctorpresent:Boolean,
+        patientpresent:Boolean
     }],
     pendingAppointments: [{
         patientEmail: String,
         appointmentDate: Date,
         reason: String
-    }]
+    }],
+    availabletimeslots:[{
+        dayName: {
+            type: String,
+            enum: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+           
+        },
+       
+        availableTimes: [String], 
+        bookedTimes: [Date] 
+    
+    }
+
+    ]
 });
 doctorSchema.pre('save',async function(){
     try{
@@ -88,6 +116,11 @@ doctorSchema.pre('save',async function(){
     }
 
 } );
+doctorSchema.methods.setAllAppointmentsAbsent = function () {
+    this.appointments.forEach(appointment => {
+      appointment.doctorpresent = false;
+    });
+  };
 
 
 const Doctor = model('Doctor', doctorSchema);

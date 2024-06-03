@@ -225,27 +225,31 @@ header {
   border-radius: 10px;
 }
 
-
-
-.footer {
-  background-color: var(--primary-color-light);
+thead th:nth-child(1) {
+  max-width: 44px;
 }
 
-.footer__container {
-  display: grid;
-  grid-template-columns: 400px repeat(3, 1fr);
-  gap: 2rem;
+tbody tr:hover {
+   background-color: #fdf2f8; 
 }
 
-.footer__col h3 {
-  margin-bottom: 1rem;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--primary-color);
+tbody tr td {
+  padding: 8px 0;
+  margin: 8px 0;
 }
 
-.footer__col h3 span {
-  color: var(--secondary-color);
+.manage-user-form input[type='submit'], .table button {
+  background: transparent;
+  color: #db2777;
+  border: none;
+  outline: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.manage-user-form input [type='submit'], table button :hover {
+  background-color: #fdf2f8;
 }
 
 .footer__col h4 {
@@ -255,19 +259,14 @@ header {
   color: var(--primary-color);
 }
 
-.footer__col p {
-  margin-bottom: 1rem;
-  color: var(--text-dark);
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.footer__col p:hover {
-  color: var(--primary-color);
-}
-
-.footer__col i {
-  color: var(--primary-color);
+thead tr th:first-child,
+tbody tr td:first-child {
+  width: 10em;
+  min-width: 15em;
+  max-width: 15em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 8px;
 }
 
 .footer__bar {
