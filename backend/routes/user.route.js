@@ -775,13 +775,13 @@ router.post('/accept-app',async(req,res,next)=>{
   
 
    if (indexp !== -1 && indexd!==-1) {
-     const appP={doctorEmail:patient.pendingAppointments[indexp].doctorEmail,appointmentDate:patient.pendingAppointments[indexp].appointmentDate
+     const appP={_id:patient.pendingAppointments[indexp],doctorEmail:patient.pendingAppointments[indexp].doctorEmail,appointmentDate:patient.pendingAppointments[indexp].appointmentDate
       ,reason:patient.pendingAppointments[indexp].reason, roomId:roomId,doctorpresent:false,patientpresent:false
      }
      patient.appointments.push(appP);
      patient.pendingAppointments.splice(indexp, 1);
         patient.save();
-        const appD={patientEmail:doctor.pendingAppointments[indexd].patientEmail,
+        const appD={_id:doctor.pendingAppointments[indexd]._id,patientEmail:doctor.pendingAppointments[indexd].patientEmail,
           appointmentDate:doctor.pendingAppointments[indexd].appointmentDate,
           reason:doctor.pendingAppointments[indexd].reason,
           roomId:roomId,
@@ -894,45 +894,45 @@ router.get('/doctor/:email', async (req, res, next) => {
 router.post('/cancel-app',async(req,res,next)=>{
   const id=req.body.appId;
   
-  
+  console.log(req.body)
   const doctor= await Doctor.findOne({email:req.body.doctorEmail})
   const patient= await Patient.findOne({email:req.body.patientEmail})
   try {
    
     const indexd = doctor.appointments.findIndex(appointment => appointment._id ==id);
         const indexp = patient.appointments.findIndex(appointment => appointment._id ==id);
-        let date=new Date(doctor.appointments[indexd].appointmentDate);
-        const daysOfWeek = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
-        const day=daysOfWeek[date.getDay()]
-        let Index1=doctor.availabletimeslots.findIndex(slot=>slot.dayName==day);
+        console.log(indexp)
+      let date=doctor.appointments[indexd].appointmentDate;
+       
+     const daysOfWeek = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+       const day=daysOfWeek[date.getDay()]
+         let Index1=doctor.availabletimeslots.findIndex(slot=>slot.dayName==day);
         let Index2;
-        
-        if(Index1!==-1){
-           Index2=doctor.availabletimeslots[Index1].bookedTimes.findIndex(slot=> slot.getTime()==date.getTime());}
+          if(Index1!==-1){
+            Index2=doctor.availabletimeslots[Index1].bookedTimes.findIndex(slot=> slot.getTime()==date.getTime());}
 
-    if (indexp !== -1 && indexd!==-1) {
+   if (indexp !== -1 && indexd!==-1) {
       
      
-   //     // Remove the slot object from the availability array
      patient.appointments.splice(indexp, 1);
      
-    patient.save();
+  patient.save();
    
-    doctor.appointments.splice(indexd, 1);
+     doctor.appointments.splice(indexd, 1);
    doctor.save();
-   console.log(doctor.availabletimeslots)
+    console.log(doctor.availabletimeslots)
    if (Index2!==-1){
-    doctor.availabletimeslots[Index1].bookedTimes.splice(Index2,1)
+     doctor.availabletimeslots[Index1].bookedTimes.splice(Index2,1)
     
      }
-  req.flash('success','Rendez-vous annulé')
+   req.flash('success','Rendez-vous annulé')
   
        
-  }
-  else{
-    req.flash('error','Une erreur est detectée')
+   }
+   else{
+     req.flash('error','Une erreur est detectée')
   
-  }
+   }
   return res.redirect('back');
 }
   catch (error) {

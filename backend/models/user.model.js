@@ -30,8 +30,8 @@ lastName:{
   role: {
     type: String,
     enum: [roles.admin, roles.doctor, roles.patient,roles.attente],
- 
   },
+ 
 });
 
 UserSchema.pre('save', async function (next) {

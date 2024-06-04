@@ -100,8 +100,7 @@ mongoose
   })
   .then(() => {
     console.log('💾 connected...');
-    // Listening for connections on the defined PORT
-    // app.listen(PORT, () => console.log(`🚀 @ http://localhost:${PORT}`));
+
   })
   .catch((err) => console.log(err.message));
   io.on('connection', socket => {
