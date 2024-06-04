@@ -756,3 +756,24 @@ h1{
   margin-left: 10px;
 }
 
+ul{
+  list-style: none;
+}
+
+.profile-line p{
+  margin-left: 5px;
+}
+
+#availabilityList{
+  margin-left: 0px !important;
+}
+
+.deleteSlotForm span{
+  margin-left: 15px;
+}
+
+.position{
+  position: relative;
+  right: 20px;
+}
+

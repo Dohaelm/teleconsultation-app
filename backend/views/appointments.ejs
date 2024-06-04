@@ -102,11 +102,16 @@
                             <input type="hidden" name="appId" value="<%= appointment._id %>" />
                             <input type="hidden" name="doctorEmail" value="<%= appointment.doctorEmail %>" />
                             <input type="hidden" name="patientEmail" value="<%= patient.email%>" />
-                            <button class="cancel" type="submit">Annuler</button>
+                            <% if (appointment.appointmentDate > new Date()) { %>
+                                <button class="cancel" type="submit">Annuler</button>
+                            <% } %>
                             
                         </form>
-                        
-                           <a href="/user/videocall/<%=appointment.roomId %>"> <button class="edit-profile">Entrer</button></a>
+                        <% if (appointment.showEnterButton) { %>
+                            <a href="/user/videocall/<%= appointment.roomId %>">
+                              <button class="edit-profile">Entrer</button>
+                            </a>
+                          <% } %>
                             
                         
                     </td>
@@ -135,9 +140,15 @@
                             <input type="hidden" name="appId" value="<%= appointment._id %>" />
                             <input type="hidden" name="patientEmail" value="<%= appointment.patientEmail %>" />
                             <input type="hidden" name="doctorEmail" value="<%= doctor.email%>" />
-                            <button class="cancel" type="submit">Annuler</button>
+                            <% if (appointment.appointmentDate > new Date()) { %>
+                                <button class="cancel" type="submit">Annuler</button>
+                            <% } %>
                         </form>
-                        <a href="/user/videocall/<%=appointment.roomId %>"> <button class="edit-profile">Entrer</button></a>
+                        <% if (appointment.showEnterButton) { %>
+                            <a href="/user/videocall/<%= appointment.roomId %>">
+                              <button class="edit-profile">Entrer</button>
+                            </a>
+                          <% } %>
                     </td>
                 </tr>
             <% }) %>

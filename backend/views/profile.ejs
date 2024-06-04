@@ -65,7 +65,7 @@
           <ul>
             <% sortedAvailability.forEach(day => { %>
               <li>
-                  <p><%= day.dayOfWeek %>:</p>
+                  <p class="position"><%= day.dayOfWeek %>:</p>
                   <ul>
                       <% for (let i = 0; i < day.startTimes.length; i++) { %>
                           <li>
@@ -92,10 +92,7 @@
       
       <button class="edit-profile"><a href="/user/edit-profile">Modifier Profile</a></button>
      <% } %>
-     <% if (condition2) { %>
-      <button class="edit-profile"><a href="/admin/edit-profile-user/<%= person.id %>">Modifier Profile</a></button>
-      
-     <% } %>
+     
      <% if (condition3) { %>
       <button class="edit-profile"> <a href="/user/booking/<%= doctor.id %>">Je prends un rendez-vous</a></button>
      <% } %>
