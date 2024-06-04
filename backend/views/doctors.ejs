@@ -4,31 +4,36 @@
   <div class="content">
     <h1 id="id2" class="table">Medecins</h1>
 
-<form id="searchForm" action="/user/doctors" method="GET">
-  <input id="searchInput" type="text" name="search" placeholder="Search by Name, Specialization, or City" value="<%= searchQuery || '' %>">
-  <button type="submit">Search</button>
-</form>
+    <form id="searchForm" action="/user/doctors" method="GET">
+      <input id="searchInput" type="text" name="search" placeholder="Search by Name, Specialization, or City" value="<%= searchQuery || '' %>">
+      <button type="submit">Search</button>
+    </form>
 
-<table class="table">
-  <thead>
-    <th>Name</th>
-  
-    <th>email</th>
-    <th>specialization</th>
-    <th>city</th>
-  </thead>
-  <tbody>
-    <% doctors.forEach(doctor => { %>
-    <tr>
-      <td><%= doctor.firstName %> <%= doctor.lastName %> </td>
-      <td><a href="/user/doctor/<%= doctor.email %>"><%= doctor.email %></a></td>
-      <td><%= doctor.specialization %> </td>
-      <td><%= doctor.city %> </td>
-     
-</tr>
-<% }) %>
-</tbody>
-</table>
+    <table class="table">
+      <thead>
+        <th>Name</th>
+      
+        <th>email</th>
+        <th>specialization</th>
+        <th>city</th>
+      </thead>
+      <tbody>
+        <% doctors.forEach(doctor => { %>
+        <tr>
+          <td><%= doctor.firstName %> <%= doctor.lastName %> </td>
+          <td><a class="link" href="/user/doctor/<%= doctor.email %>"><%= doctor.email %></a></td>
+          <td><%= doctor.specialization %> </td>
+          <td><%= doctor.city %> </td>
+        
+    </tr>
+    <% }) %>
+    </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include ('layouts/footer') %>
+
 <script>
   window.addEventListener('DOMContentLoaded', () => {
       const searchInput = document.getElementById('searchInput');
@@ -41,4 +46,4 @@
   });
 </script>
 
-<%- include ('layouts/footer') %>
+

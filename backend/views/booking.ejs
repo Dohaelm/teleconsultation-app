@@ -3,7 +3,7 @@
 <h2 id="id2" class="center">Prise de rendez-vous</h2>
 <div class="booking">
 
-<form action="/user/book-appointment" method="POST" class="lg-form">
+<form class="form" action="/user/book-appointment" method="POST">
     <div>
         <label for="patientEmail">Patient's Email:</label>
         <input type="email" id="patientEmail" name="patientEmail" value="<%= patient.email %>" readonly >
@@ -30,8 +30,8 @@
         <textarea id="reason" name="reason" rows="4" ></textarea>
     </div>
    
-    <button type="submit">Confirmer</button>
-    <button ><a href="/user/doctors"></a>Annuler</button>
+    <button class="edit-profile" type="submit">Confirmer</button>
+    <button class="cancel"><a href="/user/doctors"></a>Annuler</button>
 </form>
 </div>
 

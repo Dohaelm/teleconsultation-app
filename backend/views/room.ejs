@@ -3,20 +3,31 @@
 
 <head>
   <meta charset="UTF-8">
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
- 
-  <title>Video Conference</title>
+  <title>Health Care</title>
 </head>
 
 <body>
     <div class="container">
-        <h1>Video Conference</h1>
+        <div id="timer">00:00:00</div>
         <div class="video-container">
           <video id="remoteVideo" autoplay playsinline></video>
           <video id="localVideo" autoplay playsinline class="local-video"></video>
         </div>
-        <a href="/user/appointments"><button class="leave-btn">Leave Video Call</button></a>
+        
+
+        <div id="controls">
+            
+            <button id="toggle-microphone" class="control-button microphone">
+                <i class="fas fa-microphone"></i>
+            </button>
+            <button id="toggle-camera" class="control-button camera">
+                <i class="fas fa-video"></i>
+            </button>
+            <a href="/user/appointments"><button id="leave-call" class="control-button">
+                <i class="fas fa-phone-slash"></i>
+            </button></a>
+        </div>
       </div>
  <style>
     /* styles.css */
@@ -26,12 +37,17 @@ body {
     padding: 0;
     box-sizing: border-box;
     font-family: Arial, sans-serif;
-    background-color: #f0f2f5;
+    background-color: #242426;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
 }
+#timer {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: white;
+        }
 
 .container {
     display: flex;
@@ -78,27 +94,43 @@ video {
     background-color: #000;
 }
 
-.leave-btn {
-    padding: 10px 20px;
-    font-size: 16px;
-    color: white;
-    background-color: #007bff;
+
+
+#controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+}
+
+.control-button {
+    background-color: #f44336;
     border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-top: 20px;
+                color: white;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin: 4px 2px;
+                cursor: pointer;
+                border-radius: 50%;
+                width: 50px;
+                height: 50px;
+                display: flex;
+                align-items: center;
+                justify-content: center;         
 }
 
-.leave-btn:hover {
-    background-color: #0056b3;
-}
+        .control-button.microphone,
+        .control-button.camera {
+            background-color: #2d2f32;
+        }
 
-.leave-btn:focus {
-    outline: none;
-}
+        .control-button:hover {
+            opacity: 0.8;
+        }
 
  </style>
+ <script src="https://kit.fontawesome.com/ba72897d05.js" crossorigin="anonymous"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
  <script>
@@ -210,6 +242,144 @@ function handleDisconnection() {
     }
    
  </script>
+ <script>
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    const leaveCallButton = document.getElementById('leave-call');
+    const toggleMicrophoneButton = document.getElementById('toggle-microphone');
+    const toggleCameraButton = document.getElementById('toggle-camera');
+
+    // Fonction pour quitter l'appel vidéo
+    leaveCallButton.addEventListener('click', () => {
+        // Ajouter la logique pour quitter l'appel vidéo
+        console.log('Call ended');
+    });
+
+    // Fonction pour activer/désactiver le micro
+    toggleMicrophoneButton.addEventListener('click', () => {
+        const icon = toggleMicrophoneButton.querySelector('i');
+        if (icon.classList.contains('fa-microphone')) {
+            icon.classList.remove('fa-microphone');
+            icon.classList.add('fa-microphone-slash');
+            // Ajouter la logique pour désactiver le micro
+            console.log('Microphone muted');
+        } else {
+            icon.classList.remove('fa-microphone-slash');
+            icon.classList.add('fa-microphone');
+            // Ajouter la logique pour activer le micro
+            console.log('Microphone unmuted');
+        }
+    });
+
+    // Fonction pour activer/désactiver la caméra
+    toggleCameraButton.addEventListener('click', () => {
+        const icon = toggleCameraButton.querySelector('i');
+        if (icon.classList.contains('fa-video')) {
+            icon.classList.remove('fa-video');
+            icon.classList.add('fa-video-slash');
+            // Ajouter la logique pour désactiver la caméra
+            console.log('Camera off');
+        } else {
+            icon.classList.remove('fa-video-slash');
+            icon.classList.add('fa-video');
+            // Ajouter la logique pour activer la caméra
+            console.log('Camera on');
+        }
+    });
+});
+
+
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    const leaveCallButton = document.getElementById('leave-call');
+    const toggleMicrophoneButton = document.getElementById('toggle-microphone');
+    const toggleCameraButton = document.getElementById('toggle-camera');
+
+    let localStream;
+
+    // Fonction pour obtenir le flux média local (caméra et microphone)
+    async function getLocalStream() {
+        try {
+            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            // Utiliser le flux vidéo (par exemple, afficher dans une balise <video>)
+            const videoElement = document.querySelector('video#localVideo');
+            videoElement.srcObject = localStream;
+        } catch (error) {
+            console.error('Error accessing media devices.', error);
+        }
+    }
+
+    // Obtenir le flux média local au chargement de la page
+    getLocalStream();
+
+    // Fonction pour activer/désactiver le micro
+    toggleMicrophoneButton.addEventListener('click', () => {
+        const icon = toggleMicrophoneButton.querySelector('i');
+        const audioTracks = localStream.getAudioTracks();
+        if (audioTracks.length > 0) {
+            if (audioTracks[0].enabled) {
+                audioTracks[0].enabled = false;
+                icon.classList.remove('fa-microphone');
+                icon.classList.add('fa-microphone-slash');
+                console.log('Microphone muted');
+            } else {
+                audioTracks[0].enabled = true;
+                icon.classList.remove('fa-microphone-slash');
+                icon.classList.add('fa-microphone');
+                console.log('Microphone unmuted');
+            }
+        }
+    });
+
+    // Fonction pour activer/désactiver la caméra
+    toggleCameraButton.addEventListener('click', () => {
+        const icon = toggleCameraButton.querySelector('i');
+        const videoTracks = localStream.getVideoTracks();
+        if (videoTracks.length > 0) {
+            if (videoTracks[0].enabled) {
+                videoTracks[0].enabled = false;
+                icon.classList.remove('fa-video');
+                icon.classList.add('fa-video-slash');
+                console.log('Camera off');
+            } else {
+                videoTracks[0].enabled = true;
+                icon.classList.remove('fa-video-slash');
+                icon.classList.add('fa-video');
+                console.log('Camera on');
+            }
+        }
+    });
+});
+
+ </script>
+
+ <script>
+    // timer.js
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    let timerElement = document.getElementById('timer');
+    let startTime = Date.now();
+
+    function updateTimer() {
+        let currentTime = Date.now();
+        let elapsedTime = currentTime - startTime;
+
+        let hours = Math.floor(elapsedTime / (1000 * 60 * 60));
+        let minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
+        let seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
+
+        timerElement.textContent = 
+            (hours < 10 ? '0' : '') + hours + ':' + 
+            (minutes < 10 ? '0' : '') + minutes + ':' + 
+            (seconds < 10 ? '0' : '') + seconds;
+    }
+
+    // Update the timer every second
+    setInterval(updateTimer, 1000);
+});
+
+ </script>
+
 </body>
 
 </html>

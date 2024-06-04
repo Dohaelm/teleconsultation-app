@@ -76,23 +76,23 @@ router.post('/update-role', async (req, res, next) => {
 
     const rolesArray = Object.values(roles);
     if (!rolesArray.includes(role)) {
-      req.flash('error', 'Invalid role');
+      req.flash('error', 'Role invalide');
       return res.redirect('back');
     }
 
     if (req.user.id === id && role !== roles.admin) {
-      req.flash('error', 'Admins cannot remove themselves from Admin, ask another admin.');
+      req.flash('error', 'Un Admin ne peut pas changer son propre role.');
       return res.redirect('back');
     }
 
     const person = await User.findById(id);
 
     if (!person) {
-      req.flash('error', 'User not found');
+      req.flash('error', 'Utilisateur introuvable.');
       return res.redirect('back');
     }
     if (person.role === role) {
-      req.flash('warning', `User is already ${role}`);
+      req.flash('warning', `l'utilisateur est déja un ${role}`);
       return res.redirect('back');
     }
 
@@ -157,7 +157,7 @@ router.post('/update-role', async (req, res, next) => {
 
     await person.save();
 
-    req.flash('info', `Updated role for ${person.email} to ${role}`);
+    req.flash('info', `${role} a été attribué à ${person.email}  `);
     res.redirect('back');
   } catch (error) {
     next(error);
@@ -168,7 +168,7 @@ router.post('/delete-user', async (req, res, next) => {
   try {
     const userId = req.body.id; 
     if (req.user.id===req.body.id){
-      req.flash('warning', `Admin cannot delete himself`);
+      req.flash('warning', `Admin ne peut pas supprimer son compte`);
       return res.redirect('back')
     }
     const person = await User.findByIdAndDelete(userId);
@@ -178,7 +178,7 @@ router.post('/delete-user', async (req, res, next) => {
     if(person.role===roles.doctor){
       await Doctor.findOneAndDelete({email:person.email})
     }
-    req.flash('success', `user ${person.email} deleted`);
+    req.flash('success', `utilisateur ${person.email} supprimé`);
     res.redirect('back');
   } catch (error) {
     // Handle any errors
@@ -189,7 +189,7 @@ router.get('/edit-profile-user/:id', async (req, res, next) => {
   try {
     const {id}  = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      req.flash('error', 'Invalid id');
+      req.flash('error', 'Id Invalide');
       res.redirect('/admin/users');
        return;
      }

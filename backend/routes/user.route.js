@@ -1037,7 +1037,7 @@ router.get('/videocall/:roomId',async(req,res,next)=>{
      }
      
       else{
-        req.flash('error','Not allowed to enter')
+        req.flash('error','Accès interdit')
            return    res.render('index')} 
        
      

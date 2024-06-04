@@ -20,7 +20,7 @@
     </div>
     <% if (!patient && !doctor) { %>
       <button class="edit-profile" type="submit">Enregistrer</button>
-      <button class="cancel"><a href="/user/profile" >Annuler</a></button>
+      <button class="cancel"><a href="/user/profile">Annuler</a></button>
     <%}%>
       
       <% if (patient) { %>
@@ -70,7 +70,7 @@
         </div>
        
         <div id="availabilityInputs">
-          <p class="title">Disponibilité</p>
+          <label id="id1" class="title">Disponibilité</label>
           <!-- Day of the Week Selection -->
           <div class="flex">
             <label for="dayOfWeek"><i id="i" class="fa-regular fa-calendar"></i>Choisir un jour de la semaine:</label>
@@ -110,6 +110,7 @@
               <% } %>
           </select>
           </div>
+          <br>
   
           <!-- Add Button -->
           <button class="add-availability" type="button" onclick="addAvailability()"><i class="fa-solid fa-plus"></i>Ajouter disponibilité</button>
@@ -120,18 +121,20 @@
       <div id="checkboxesd"></div>
       <div id="checkboxest"></div>
       <div id="checkboxese"></div>
-      <p class="title">Additional information</p>
+      
+      <label id="id1" class="title">Infos supplémentaires</label>
      <div class="additionalInfo">
-      <label for="typeInfo">Type d'information :</label>
+      <div class="flex">
+        <p for="typeInfo">Type d'information :</p>
       <select id="typeInfo" name="typeInfo"  >
-
           <option value="">Sélectionner une option</option>
           <option value="Congé">Congé</option>
           <option value="Disponibilité exceptionnelle">Disponibilité exceptionnelle</option>
           <option value="Non disponibilité exceptionnelle">Non disponibilité exceptionnelle</option>
           <option value="Autre">Autre</option>
       </select>
-      <br>
+      </div>
+
       <div id="dateTimeFields">
       <label for="debut">Début</label>
       <input type="date" name="debut" id="debut">
@@ -141,9 +144,10 @@
     </div>
         
         <div id="dateField" style="display: none;">
-          <label for="date">Date</label>
+          <p for="date">Date</p>
           <input type="date" name="date" id="date">
-          <label for="debut">De</label>
+          <div class="flex">
+            <p for="debut">De</p>
           <select id="time" name="timeStart">
             <option value="">Sélectionnez un horaire</option>
             <option value="00:00">00:00</option> <!-- Special case for midnight -->
@@ -155,7 +159,9 @@
                 <% } %>
             <% } %>
         </select>
-          <label for="fin">à</label>
+          </div>
+          <div class="flex">
+            <p for="fin">à</p>
           <select id="time" name="timeEnd">
             <option value="">Sélectionnez un horaire</option>
             <option value="00:00">00:00</option> <!-- Special case for midnight -->
@@ -167,6 +173,7 @@
                 <% } %>
             <% } %>
         </select>
+          </div>
       </div>
      <div id="contenu" style="display: none;">
       <label for="contenu" >Contenu</label>
@@ -174,11 +181,12 @@
       <input type="text" name="contenu">
     </div>
      </div>
-      <button class="save" type="submit">Save</button>
+      <button class="edit-profile" type="submit">Save</button>
       <button class="cancel"><a href="/user/profile" >cancel</a></button>
     </form>
+    <br>
     <div><% if (doctor.availability.length>0) { %>
-      <p class="title">Supprimer des disponibilités</p>
+      <p id="id1" class="title">Supprimer des disponibilités</p>
     <% } %>
      
       <div> 
@@ -196,7 +204,7 @@
                                   <input type="hidden" name="slotId" value="<%= slot._id %>" />
                                   <input type="hidden" name="startTime" value="<%= slot.startTimes[i] %>" />
                                   <input type="hidden" name="endTime" value="<%= slot.endTimes[i] %>" />
-                                  <button class="deleteSlot">Delete</button>
+                                  <button class="cancelp"><i class="fa-solid fa-trash-can"></i></button>
                               </form>
                           </li>
                       <% } %>
@@ -207,8 +215,9 @@
     </div>
     </ul>
     </div>
+    
     <% if (doctor.additionalInfo.length>0) { %>
-      <p class="title"> Supprimer des informations supplémentaires</p>
+      <p id="id1" class="title"> Supprimer des informations supplémentaires</p>
     <% } %>
     
     <div class="additionalInfo">
@@ -219,10 +228,10 @@
                   <li>
                       <form class="deleteAdditionalInfoForm" action="/user/delete-additional-info" method="post">
                           
-                          <span>Contenu: <%= info.contenu %></span>
+                          <span><%= info.contenu %></span>
                           <input type="hidden" name="doctorEmail" value="<%= doctor.email %>" />
                           <input type="hidden" name="additionalInfoId" value="<%= info._id %>" />
-                          <button class="deleteAdditionalInfo" type="submit">Delete</button>
+                          <button class="cancelp" type="submit"><i class="fa-solid fa-trash-can"></i></button>
                       </form>
                   </li>
               <% }) %>
@@ -320,6 +329,7 @@ document.getElementById('typeInfo').addEventListener('change', function() {
           // Create delete button
           const deleteButton = document.createElement('button');
           deleteButton.textContent = 'Delete';
+          deleteButton.classList.add('cancelp');
           deleteButton.addEventListener('click', function() {
               // Remove the corresponding list item when delete button is clicked
               listItem.remove();
@@ -356,4 +366,4 @@ document.getElementById('typeInfo').addEventListener('change', function() {
 </div>
 </div>          
       
-<%- include('./layouts/footer') %>
+<!-- <%- include('./layouts/footer') %> -->
