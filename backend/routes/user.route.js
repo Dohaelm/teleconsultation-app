@@ -552,7 +552,9 @@ router.get('/booking/:id',async(req,res,next)=>{
     const diff = appointmentTime.diff(now, 'minutes');
   
     return diff <= 5 &&  diff >= -30;;
+
   }
+  
 router.get('/appointments',async(req,res,next)=>{
   try {
     function formatDateTime(date) {
@@ -570,16 +572,19 @@ router.get('/appointments',async(req,res,next)=>{
     let patient=null;
     let condition1=null;
     let condition2=null;
+    const now = new Date();
     
     
     if(person.role===roles.patient){
       patient= await Patient.findOne({email:req.user.email})
       patient.setAllAppointmentsAbsent();
+      
+     
+      patient.pendingAppointments = patient.pendingAppointments.filter(appointment => appointment.appointmentDate > now);
       await patient.save();
       patient.appointments.forEach(appointment => {
         appointment.showEnterButton = isWithinFiveMinutes(appointment.appointmentDate);
       });
-   
       condition1=true;
       
     }
@@ -588,12 +593,15 @@ router.get('/appointments',async(req,res,next)=>{
     if(person.role===roles.doctor){
      doctor= await Doctor.findOne({email:req.user.email})
      doctor.setAllAppointmentsAbsent();
+    
+     
+
+     doctor.pendingAppointments = doctor.pendingAppointments.filter(appointment => appointment.appointmentDate > now);
      await doctor.save();
+     condition2=true;
      doctor.appointments.forEach(appointment => {
       appointment.showEnterButton = isWithinFiveMinutes(appointment.appointmentDate);
     });
-   
-     condition2=true;
      
     }
     

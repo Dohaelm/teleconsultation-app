@@ -92,7 +92,10 @@
                             <input type="hidden" name="appId" value="<%= appointment._id %>" />
                             <input type="hidden" name="doctorEmail" value="<%= appointment.doctorEmail %>" />
                             <input type="hidden" name="patientEmail" value="<%= patient.email%>" />
-                            <button type="submit">Annuler</button>
+                            <% if (appointment.appointmentDate > new Date()) { %>
+                                <button type="submit">Annuler</button>
+                            <% } %>
+                            
                             
                         </form>
                         <% if (appointment.showEnterButton) { %>
@@ -127,7 +130,9 @@
                             <input type="hidden" name="appId" value="<%= appointment._id %>" />
                             <input type="hidden" name="patientEmail" value="<%= appointment.patientEmail %>" />
                             <input type="hidden" name="doctorEmail" value="<%= doctor.email%>" />
-                            <button type="submit">Annuler</button>
+                            <% if (appointment.appointmentDate > new Date()) { %>
+                                <button type="submit">Annuler</button>
+                            <% } %>
                         </form>
                         <% if (appointment.showEnterButton) { %>
                             <a href="/user/videocall/<%= appointment.roomId %>">
