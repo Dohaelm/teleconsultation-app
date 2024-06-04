@@ -41,19 +41,11 @@ const patientSchema=new Schema({
         type: String,
        
     },
-    address: {
-        type: String
-    },
-    phoneNumber: {
-        type: String
-    },
-    nationalID: {
-        type: String
-    },
+  
     weight: Number,
     height: Number,
     bloodType: String,
-    diseases: [String],
+
     appointments: [{
         doctorEmail: String,
         appointmentDate: Date,

@@ -40,15 +40,8 @@ const doctorSchema = new Schema({
         type: String,
         lowercase:true
     },
-    address: {
-        type: String
-    },
-    phoneNumber: {
-        type: String
-    },
-    nationalID: {
-        type: String
-    },
+    
+   
     availability:[{
         dayOfWeek: {
             type: String,
@@ -63,7 +56,7 @@ const doctorSchema = new Schema({
       type:  String,
       lowercase:true},
     experience: Number,
-    hospitalAffiliation: String,
+   
     additionalInfo: [{
         typeInfo: { 
             type:String,
