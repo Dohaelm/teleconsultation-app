@@ -652,6 +652,10 @@ router.post('/book-appointment',async(req,res,next)=>{
     const dayOfApp = daysOfWeek[appDate.getDay()];
     const Index= doctor.availabletimeslots.findIndex(slot=>slot.dayName==dayOfApp);
     let Index2;
+    if(appDate<new Date()){
+      req.flash('warning','veuillez choisir une date valide.')
+      return res.redirect('back')
+    }
     if(Index!==-1){
       Index2= doctor.availabletimeslots[Index].bookedTimes.push(appDate);
     }
