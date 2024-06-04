@@ -545,6 +545,14 @@ router.get('/booking/:id',async(req,res,next)=>{
     next(error)
   }
   });
+  
+  function isWithinFiveMinutes(appointmentDate) {
+    const now = moment();
+    const appointmentTime = moment(appointmentDate);
+    const diff = appointmentTime.diff(now, 'minutes');
+  
+    return diff <= 5 &&  diff >= -30;;
+  }
 router.get('/appointments',async(req,res,next)=>{
   try {
     function formatDateTime(date) {
@@ -568,7 +576,9 @@ router.get('/appointments',async(req,res,next)=>{
       patient= await Patient.findOne({email:req.user.email})
       patient.setAllAppointmentsAbsent();
       await patient.save();
-      
+      patient.appointments.forEach(appointment => {
+        appointment.showEnterButton = isWithinFiveMinutes(appointment.appointmentDate);
+      });
    
       condition1=true;
       
@@ -579,6 +589,9 @@ router.get('/appointments',async(req,res,next)=>{
      doctor= await Doctor.findOne({email:req.user.email})
      doctor.setAllAppointmentsAbsent();
      await doctor.save();
+     doctor.appointments.forEach(appointment => {
+      appointment.showEnterButton = isWithinFiveMinutes(appointment.appointmentDate);
+    });
    
      condition2=true;
      
@@ -914,67 +927,73 @@ router.post('/cancel-app',async(req,res,next)=>{
 })
 router.get('/available-timeslots', async (req, res) => {
   try {
-      const { doctorEmail, date } = req.query;
-      const doctor = await Doctor.findOne({ email: doctorEmail });
+    const { doctorEmail, date } = req.query;
+    const doctor = await Doctor.findOne({ email: doctorEmail });
 
-      if (!doctor) {
-          return res.status(404).send('Doctor not found');
-      }
+    if (!doctor) {
+      return res.status(404).send('Doctor not found');
+    }
 
-      const appDate = new Date(date);
-      const daysOfWeek = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
-      const dayofApp = daysOfWeek[appDate.getDay()];
-      const leaveEntry = doctor.additionalInfo.some(info =>
-        info.typeInfo === 'Congé' &&
-        appDate >= new Date(info.debut) &&
-        appDate <= new Date(info.fin)
+    const appDate = new Date(date);
+    const today = new Date();
+    const isToday = appDate.toDateString() === today.toDateString();
+    const currentTime = `${today.getHours().toString().padStart(2, '0')}:${today.getMinutes().toString().padStart(2, '0')}`;
+    const daysOfWeek = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+    const dayofApp = daysOfWeek[appDate.getDay()];
+    
+    const leaveEntry = doctor.additionalInfo.some(info =>
+      info.typeInfo === 'Congé' &&
+      appDate >= new Date(info.debut) &&
+      appDate <= new Date(info.fin)
+    );
+
+    // Find the availability entry for the day of the week
+    const availabilityEntry = doctor.availabletimeslots.find(entry => entry.dayName === dayofApp);
+
+    // Initialize availableTimes with regular availability timeslots
+    let availableTimes = availabilityEntry ? availabilityEntry.availableTimes.slice() : [];
+
+    // Check for exceptional availabilities
+    const exceptionalEntries = doctor.additionalInfo.filter(info => 
+      info.typeInfo === 'Disponibilité exceptionnelle' &&
+      new Date(info.debut).toISOString().substring(0, 10) === appDate.toISOString().substring(0, 10)
+    );
+
+    // Generate exceptional timeslots and add them to availableTimes
+    exceptionalEntries.forEach(entry => {
+      const exceptionalSlots = dividingTimeSlots(
+        entry.debut.toTimeString().substring(0, 5), 
+        entry.fin.toTimeString().substring(0, 5)
       );
-     
-      
-      // Trouver l'entrée de disponibilité pour le jour de la semaine
-      const availabilityEntry = doctor.availabletimeslots.find(entry => entry.dayName === dayofApp);
+      availableTimes = availableTimes.concat(exceptionalSlots);
+    });
 
-      // Initialiser availableTimes avec les horaires de disponibilité réguliers
-      let availableTimes = availabilityEntry ? availabilityEntry.availableTimes.slice() : [];
+    if (!availabilityEntry && exceptionalEntries.length === 0 || leaveEntry) {
+      return res.json([]);
+    }
 
-      // Vérifiez les disponibilités exceptionnelles
-      const exceptionalEntries = doctor.additionalInfo.filter(info => 
-          info.typeInfo === 'Disponibilité exceptionnelle' &&
-          new Date(info.debut).toISOString().substring(0, 10) === appDate.toISOString().substring(0, 10)
-      );
+    // Filter out timeslots that are already booked
+    const inputDate = new Date(appDate).toISOString().substring(0, 10);
+    const bookedTimes = new Set(
+      availabilityEntry.bookedTimes
+        .filter(time => time.toISOString().substring(0, 10) === inputDate)
+        .map(time => {
+          const hours = time.getHours().toString().padStart(2, '0');
+          const minutes = time.getMinutes().toString().padStart(2, '0');
+          return `${hours}:${minutes}`;
+        })
+    );
 
-      // Générer les créneaux horaires exceptionnels et les ajouter à availableTimes
-      exceptionalEntries.forEach(entry => {
-          const exceptionalSlots = dividingTimeSlots(
-              entry.debut.toTimeString().substring(0, 5), 
-              entry.fin.toTimeString().substring(0, 5)
-          );
-          availableTimes = availableTimes.concat(exceptionalSlots);
-      });
-      
-      if (!availabilityEntry && exceptionalEntries.length === 0 || leaveEntry) {
-          return res.json([]);
-      }
+    // Filter availableTimes to exclude booked times and times earlier than the current time if the appointment is for today
+    availableTimes = availableTimes.filter(time => !bookedTimes.has(time) && (!isToday || time > currentTime));
 
-      // Filtrer les créneaux horaires déjà réservés
-      const inputDate = new Date(appDate).toISOString().substring(0, 10);
-      const bookedTimes = new Set(
-          availabilityEntry.bookedTimes
-              .filter(time => time.toISOString().substring(0, 10) === inputDate) // Filtrer par jour
-              .map(time => {
-                  const hours = time.getHours().toString().padStart(2, '0'); // S'assurer d'avoir deux chiffres pour les heures
-                  const minutes = time.getMinutes().toString().padStart(2, '0'); // S'assurer d'avoir deux chiffres pour les minutes
-                  return `${hours}:${minutes}`;
-              })
-      );
-
-      availableTimes = availableTimes.filter(time => !bookedTimes.has(time));
-      res.json(availableTimes);
+    res.json(availableTimes);
   } catch (error) {
-      console.error(error);
-      res.status(500).send('Server error');
+    console.error(error);
+    res.status(500).send('Server error');
   }
 });
+
 
 router.post('/delete-additional-info', async (req, res) => {
   try {

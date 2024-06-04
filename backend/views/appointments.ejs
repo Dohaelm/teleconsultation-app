@@ -95,8 +95,11 @@
                             <button type="submit">Annuler</button>
                             
                         </form>
-                        
-                           <a href="/user/videocall/<%=appointment.roomId %>"> <button>Entrer</button></a>
+                        <% if (appointment.showEnterButton) { %>
+                            <a href="/user/videocall/<%= appointment.roomId %>">
+                              <button>Entrer</button>
+                            </a>
+                          <% } %>
                             
                         
                     </td>
@@ -126,7 +129,11 @@
                             <input type="hidden" name="doctorEmail" value="<%= doctor.email%>" />
                             <button type="submit">Annuler</button>
                         </form>
-                        <a href="/user/videocall/<%=appointment.roomId %>"> <button>Entrer</button></a>
+                        <% if (appointment.showEnterButton) { %>
+                            <a href="/user/videocall/<%= appointment.roomId %>">
+                              <button>Entrer</button>
+                            </a>
+                          <% } %>
                     </td>
                 </tr>
             <% }) %>
