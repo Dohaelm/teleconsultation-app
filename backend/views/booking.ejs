@@ -5,28 +5,28 @@
 
 <form class="form" action="/user/book-appointment" method="POST">
     <div>
-        <label for="patientEmail">Patient's Email:</label>
+        <label for="patientEmail">Email du patient :</label>
         <input type="email" id="patientEmail" name="patientEmail" value="<%= patient.email %>" readonly >
     </div>
     <div>
-        <label for="doctorEmail">Doctor's Email:</label>
+        <label for="doctorEmail">Email du médecin :</label>
         <input type="email" id="doctorEmail" name="doctorEmail" value="<%= doctor.email %>"  readonly>
     </div>
     <div>
-        <label for="date">Date of Consultation:</label>
+        <label for="date">Date de consultation :</label>
         <input type="date" id="date" name="date" required>
     </div>
     <div id="timeSlotContainer" style="display: none;">
-        <label for="timeSlot">Available Time Slots:</label>
+        <label for="timeSlot">Crénaux horaires disponibles :</label>
         <select id="timeSlotSelect" name="timeSlotSelect" required>
-            <option value="">Select a time slot</option>
+            <option value="">Choisir un créneau horaire</option>
         </select>
     </div>
     <p id="notavailable"></p>
     <input type="hidden" id="selectedTimeSlot" name="timeSlot">
     
     <div>
-        <label for="reason">Reason for Consultation:</label>
+        <label for="reason">Raison de consultation :</label>
         <textarea id="reason" name="reason" rows="4" ></textarea>
     </div>
    
@@ -72,7 +72,7 @@
             timeSlotContainer.style.display = 'block';
         } else {
             timeSlotContainer.style.display = 'none';
-            notavailable.textContent="No available time slots."
+            notavailable.textContent="Aucun créneau horaire disponible."
         }
     }
 
