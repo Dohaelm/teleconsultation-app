@@ -249,59 +249,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const toggleMicrophoneButton = document.getElementById('toggle-microphone');
     const toggleCameraButton = document.getElementById('toggle-camera');
 
-    // Fonction pour quitter l'appel vidéo
-    leaveCallButton.addEventListener('click', () => {
-        // Ajouter la logique pour quitter l'appel vidéo
-        console.log('Call ended');
-    });
-
-    // Fonction pour activer/désactiver le micro
-    toggleMicrophoneButton.addEventListener('click', () => {
-        const icon = toggleMicrophoneButton.querySelector('i');
-        if (icon.classList.contains('fa-microphone')) {
-            icon.classList.remove('fa-microphone');
-            icon.classList.add('fa-microphone-slash');
-            // Ajouter la logique pour désactiver le micro
-            console.log('Microphone muted');
-        } else {
-            icon.classList.remove('fa-microphone-slash');
-            icon.classList.add('fa-microphone');
-            // Ajouter la logique pour activer le micro
-            console.log('Microphone unmuted');
-        }
-    });
-
-    // Fonction pour activer/désactiver la caméra
-    toggleCameraButton.addEventListener('click', () => {
-        const icon = toggleCameraButton.querySelector('i');
-        if (icon.classList.contains('fa-video')) {
-            icon.classList.remove('fa-video');
-            icon.classList.add('fa-video-slash');
-            // Ajouter la logique pour désactiver la caméra
-            console.log('Camera off');
-        } else {
-            icon.classList.remove('fa-video-slash');
-            icon.classList.add('fa-video');
-            // Ajouter la logique pour activer la caméra
-            console.log('Camera on');
-        }
-    });
-});
-
-
-
-document.addEventListener('DOMContentLoaded', (event) => {
-    const leaveCallButton = document.getElementById('leave-call');
-    const toggleMicrophoneButton = document.getElementById('toggle-microphone');
-    const toggleCameraButton = document.getElementById('toggle-camera');
-
     let localStream;
 
-    // Fonction pour obtenir le flux média local (caméra et microphone)
+    // Function to get local media stream (camera and microphone)
     async function getLocalStream() {
         try {
             localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            // Utiliser le flux vidéo (par exemple, afficher dans une balise <video>)
+            // Use the video stream (e.g., display in a <video> tag)
             const videoElement = document.querySelector('video#localVideo');
             videoElement.srcObject = localStream;
         } catch (error) {
@@ -309,10 +263,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
     }
 
-    // Obtenir le flux média local au chargement de la page
+    // Get local media stream on page load
     getLocalStream();
 
-    // Fonction pour activer/désactiver le micro
+    // Function to toggle microphone
     toggleMicrophoneButton.addEventListener('click', () => {
         const icon = toggleMicrophoneButton.querySelector('i');
         const audioTracks = localStream.getAudioTracks();
@@ -322,16 +276,20 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 icon.classList.remove('fa-microphone');
                 icon.classList.add('fa-microphone-slash');
                 console.log('Microphone muted');
+                // Notify remote peer about the change
+                socket.emit('toggle-microphone', { enabled: false });
             } else {
                 audioTracks[0].enabled = true;
                 icon.classList.remove('fa-microphone-slash');
                 icon.classList.add('fa-microphone');
                 console.log('Microphone unmuted');
+                // Notify remote peer about the change
+                socket.emit('toggle-microphone', { enabled: true });
             }
         }
     });
 
-    // Fonction pour activer/désactiver la caméra
+    // Function to toggle camera
     toggleCameraButton.addEventListener('click', () => {
         const icon = toggleCameraButton.querySelector('i');
         const videoTracks = localStream.getVideoTracks();
@@ -341,15 +299,44 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 icon.classList.remove('fa-video');
                 icon.classList.add('fa-video-slash');
                 console.log('Camera off');
+                // Notify remote peer about the change
+                socket.emit('toggle-camera', { enabled: false });
             } else {
                 videoTracks[0].enabled = true;
                 icon.classList.remove('fa-video-slash');
                 icon.classList.add('fa-video');
                 console.log('Camera on');
+                // Notify remote peer about the change
+                socket.emit('toggle-camera', { enabled: true });
             }
         }
     });
+
+    // Function to leave the call
+    leaveCallButton.addEventListener('click', () => {
+        socket.emit('leave-call');
+        console.log('Call ended');
+    });
+
+    // Handle incoming toggle microphone messages
+    socket.on('toggle-microphone', (data) => {
+        const remoteAudioTracks = remoteStream.getAudioTracks();
+        if (remoteAudioTracks.length > 0) {
+            remoteAudioTracks[0].enabled = data.enabled;
+            console.log('Remote microphone ' + (data.enabled ? 'unmuted' : 'muted'));
+        }
+    });
+
+    // Handle incoming toggle camera messages
+    socket.on('toggle-camera', (data) => {
+        const remoteVideoTracks = remoteStream.getVideoTracks();
+        if (remoteVideoTracks.length > 0) {
+            remoteVideoTracks[0].enabled = data.enabled;
+            console.log('Remote camera ' + (data.enabled ? 'on' : 'off'));
+        }
+    });
 });
+
 
  </script>
 

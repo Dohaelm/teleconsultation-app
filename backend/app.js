@@ -131,16 +131,24 @@ mongoose
         socket.to('room1').emit('candidate', candidate);
     });
 
-    socket.on('disconnect', () => {
-      console.log('A user disconnected');
-      socket.broadcast.emit('disconnect-peer');
-      
+    socket.on('toggle-microphone', data => {
+        socket.to('room1').emit('toggle-microphone', data);
+    });
 
-        // Handle updating the user's presence status in the database based on their role
-        // (Your logic for updating presence status goes here...)
-   
-       // Emit custom event
-  });
+    socket.on('toggle-camera', data => {
+        socket.to('room1').emit('toggle-camera', data);
+    });
+
+    socket.on('leave-call', () => {
+        console.log('A user left the call');
+        socket.to('room1').emit('disconnect-peer');
+        socket.leave('room1');
+    });
+
+    socket.on('disconnect', () => {
+        console.log('A user disconnected');
+        socket.broadcast.emit('disconnect-peer');
+    });
 });
 server.listen(3000, () => {
   console.log(`🚀 @ http://localhost:${PORT}`);

@@ -204,7 +204,7 @@ router.post('/save',async(req,res,next)=>{
         
        }
         
-        if (Array.isArray(daysOfWeek) && Array.isArray(startTimes) && Array.isArray(endTimes) ) {
+        if (Array.isArray(daysOfWeek) && Array.isArray(startTimes) && Array.isArray(endTimes) && accurate ) {
           // Iterate over each selected day/time slot combination
           for (let i = 0; i < daysOfWeek.length; i++) {
 
@@ -234,8 +234,8 @@ router.post('/save',async(req,res,next)=>{
              req.flash("warning","Veuillez choisir un autre horaire")
            
          }
-           
-                // Update existing availability object
+          
+                if(!timeSlotExists && !overlapsExistingSlot){
                 doctor.availability[existingIndex].startTimes.push(startTimes[i]);
                 doctor.availability[existingIndex].startTimes.sort((time1, time2) => {
                   // Convert time strings to Date objects
@@ -268,7 +268,9 @@ doctor.availabletimeslots[existingIndex2].availableTimes.sort((time1, time2) => 
 });
 
               }
-            }else {
+            }
+          }
+          else {
                 const availabilityObj = {
                     dayOfWeek: daysOfWeek[i],
                     startTimes: [startTimes[i]],
@@ -286,14 +288,15 @@ doctor.availabletimeslots[existingIndex2].availableTimes.sort((time1, time2) => 
               }
                 doctor.availability.push(availabilityObj);
                
-            }  
+            } 
+          } 
         }
         
         
         
            
            
-          } 
+           
           if(typeInfo){
             if(typeInfo=='Autre'){
               if(contenu){
