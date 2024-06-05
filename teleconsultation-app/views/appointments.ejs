@@ -1,0 +1,162 @@
+<%- include('./layouts/header') %>
+<div class="wrapper">
+    <%- include('./layouts/sidebar') %>
+    <div class="content">
+        <h2 id="id2">Rendez-vous en attente</h2>
+<table class="table">
+   
+    <% if (condition1) { %>
+        <thead>
+            <th>Medecin</th>
+          
+            <th>Date</th>
+            <th>Motif</th>
+            <th>Action</th>
+
+            
+          </thead>
+     
+        <tbody>
+            <input type="hidden" value="<%= patient.email %>" name="patientEmail">
+            <% patient.pendingAppointments.forEach(appointment => { %>
+                <tr>
+                    <td><a class="link" href="/user/doctor/<%= appointment.doctorEmail %>"><%= appointment.doctorEmail %></a></td>
+                    <td><%= formatDateTime(appointment.appointmentDate)%></td>
+                    <td><%= appointment.reason %></td>
+                    <td> <!-- New column for actions -->
+                        <form action="/user/delete-app" method="post" onsubmit="return confirm('Are you sure you want to delete this appointment?')">
+                            <input type="hidden" name="appId" value="<%= appointment._id %>" />
+                            <input type="hidden" name="patientEmail" value="<%= patient.email %>" />
+                            <input type="hidden" name="doctorEmail" value="<%= appointment.doctorEmail%>" />
+                          
+                            <button class="cancel" type="submit">Annuler</button>
+                          
+                        </form>
+                    </td>
+                </tr>
+            <% }) %>
+        </tbody>
+    <% } %>
+    <% if (condition2) { %>
+        <thead>
+            <th>Patient</th>
+          
+            <th>Date</th>
+            <th>Motif</th>
+            <th>Annulation</th>
+            <th>Confirmation</th>
+
+            
+          </thead>
+     
+        <tbody>
+            
+            <% doctor.pendingAppointments.forEach(appointment => { %>
+                <tr>
+                    <td><a class="link" href="/user/patient/<%= appointment.patientEmail %>"><%= appointment.patientEmail %></a></td>
+                    <td><%= formatDateTime(appointment.appointmentDate) %></td>
+                    <td><%= appointment.reason %></td>
+                    <td> <!-- New column for actions -->
+                        <form action="/user/delete-app" method="post" onsubmit="return confirm('Are you sure you want to delete this appointment?')">
+                            <input type="hidden" name="appId" value="<%= appointment._id %>" />
+                            <input type="hidden" name="patientEmail" value="<%= appointment.patientEmail %>" />
+                            <input type="hidden" name="doctorEmail" value="<%= doctor.email%>" />
+                            <button class="cancel" type="submit">Annuler</button>
+                        </form>
+                    </td>
+                    <td> <!-- New column for actions -->
+                        <form action="/user/accept-app" method="post" onsubmit="return confirm('Are you sure you want to accept this appointment?')">
+                            <input type="hidden" name="appId" value="<%= appointment._id %>" />
+                            <input type="hidden" name="patientEmail" value="<%= appointment.patientEmail %>" />
+                            <input type="hidden" name="doctorEmail" value="<%= doctor.email%>" />
+                            <button class="edit-profile" type="submit">Accepter</button>
+                        </form>
+                    </td>
+                </tr>
+            <% }) %>
+        </tbody>
+    <% } %>
+  </table>
+  <h2 class="rdv" id="id2">Rendez-vous</h2>
+<table class="table">
+   
+    <% if (condition1) { %>
+        <thead>
+            <th>Medecin</th>
+          
+            <th>Date</th>
+            <th>Motif</th>
+            <th>Action</th>
+            
+            
+          </thead>
+     
+        <tbody>
+            <% patient.appointments.forEach(appointment => { %>
+                <tr>
+                    <td><a class="link" href="/user/doctor/<%= appointment.doctorEmail %>"><%= appointment.doctorEmail %></a></td>
+                    <td><%= formatDateTime(appointment.appointmentDate) %></td>
+                    <td><%= appointment.reason %></td>
+                    <td> <!-- New column for actions -->
+                        <form action="/user/cancel-app" method="post" onsubmit="return confirm('Are you sure you want to delete this appointment?')">
+                            <input type="hidden" name="appId" value="<%= appointment._id %>" />
+                            <input type="hidden" name="doctorEmail" value="<%= appointment.doctorEmail %>" />
+                            <input type="hidden" name="patientEmail" value="<%= patient.email%>" />
+                            <% if (appointment.appointmentDate > new Date()) { %>
+                                <button class="cancel" type="submit">Annuler</button>
+                            <% } %>
+                            
+                        </form>
+                        <% if (appointment.showEnterButton) { %>
+                            <a href="/user/videocall/<%= appointment.roomId %>">
+                              <button class="edit-profile">Entrer</button>
+                            </a>
+                          <% } %>
+                            
+                        
+                    </td>
+                </tr>
+            <% }) %>
+        </tbody>
+    <% } %>
+    <% if (condition2) { %>
+        <thead>
+            <th>Patient</th>
+          
+            <th>Date</th>
+            <th>Motif</th>
+            <th>Action</th>
+            
+          </thead>
+     
+        <tbody>
+            <% doctor.appointments.forEach(appointment => { %>
+                <tr>
+                    <td><a class="link" href="/user/patient/<%= appointment.patientEmail %>"><%= appointment.patientEmail %></a></td>
+                    <td><%= formatDateTime(appointment.appointmentDate) %></td>
+                    <td><%= appointment.reason %></td>
+                    <td> <!-- New column for actions -->
+                        <form action="/user/cancel-app" method="post" onsubmit="return confirm('Are you sure you want to delete this appointment?')">
+                            <input type="hidden" name="appId" value="<%= appointment._id %>" />
+                            <input type="hidden" name="patientEmail" value="<%= appointment.patientEmail %>" />
+                            <input type="hidden" name="doctorEmail" value="<%= doctor.email%>" />
+                            <% if (appointment.appointmentDate > new Date()) { %>
+                                <button class="cancel" type="submit">Annuler</button>
+                            <% } %>
+                        </form>
+                        <% if (appointment.showEnterButton) { %>
+                            <a href="/user/videocall/<%= appointment.roomId %>">
+                              <button class="edit-profile">Entrer</button>
+                            </a>
+                          <% } %>
+                    </td>
+                </tr>
+            <% }) %>
+        </tbody>
+    <% } %>
+  </table>
+</div>
+</div>
+
+
+<%- include('./layouts/footer') %>

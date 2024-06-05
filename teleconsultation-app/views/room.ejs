@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Health Care</title>
+</head>
+
+<body>
+    <div class="container">
+        <div id="timer">00:00:00</div>
+        <div class="video-container">
+          <video id="remoteVideo" autoplay playsinline></video>
+          <video id="localVideo" autoplay playsinline class="local-video"></video>
+        </div>
+        
+
+        <div id="controls">
+            
+            <button id="toggle-microphone" class="control-button microphone">
+                <i class="fas fa-microphone"></i>
+            </button>
+            <button id="toggle-camera" class="control-button camera">
+                <i class="fas fa-video"></i>
+            </button>
+            <a href="/user/appointments"><button id="leave-call" class="control-button">
+                <i class="fas fa-phone-slash"></i>
+            </button></a>
+        </div>
+      </div>
+ <style>
+    /* styles.css */
+
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    background-color: #242426;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+#timer {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+h1 {
+    text-align: center;
+    margin: 20px 0;
+    color: #333;
+}
+
+.video-container {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.local-video {
+    position: absolute;
+    width: 200px;
+    height: 150px;
+    bottom: 20px;
+    right: 20px;
+    border: 2px solid white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    background-color: #000;
+}
+
+
+
+#controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+}
+
+.control-button {
+    background-color: #f44336;
+    border: none;
+                color: white;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin: 4px 2px;
+                cursor: pointer;
+                border-radius: 50%;
+                width: 50px;
+                height: 50px;
+                display: flex;
+                align-items: center;
+                justify-content: center;         
+}
+
+        .control-button.microphone,
+        .control-button.camera {
+            background-color: #2d2f32;
+        }
+
+        .control-button:hover {
+            opacity: 0.8;
+        }
+
+ </style>
+ <script src="https://kit.fontawesome.com/ba72897d05.js" crossorigin="anonymous"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+ <script>
+  const socket = io();
+
+const localVideo = document.getElementById('localVideo');
+const remoteVideo = document.getElementById('remoteVideo');
+
+const peerConnectionConfig = {
+    'iceServers': [
+        {'urls': 'stun:stun.l.google.com:19302'}
+    ]
+};
+
+let localStream;
+let remoteStream;
+let peerConnection;
+
+// Get local media stream
+navigator.mediaDevices.getUserMedia({video: true, audio: true})
+    .then(stream => {
+        localStream = stream;
+        localVideo.srcObject = stream;
+
+        // Emit an event to join a room
+        socket.emit('join', 'room1');
+    })
+    .catch(error => console.error('Error accessing media devices.', error));
+
+// Handle signaling
+socket.on('offer', handleOffer);
+socket.on('answer', handleAnswer);
+socket.on('candidate', handleCandidate);
+
+
+
+socket.on('ready', () => {
+    peerConnection = new RTCPeerConnection(peerConnectionConfig);
+
+    // Add local stream to peer connection
+    localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+    peerConnection.ontrack = event => {
+        remoteStream = event.streams[0];
+        remoteVideo.srcObject = remoteStream;
+    };
+
+    peerConnection.onicecandidate = event => {
+        if (event.candidate) {
+            socket.emit('candidate', event.candidate);
+        }
+    };
+
+    // Create an offer
+    peerConnection.createOffer()
+        .then(offer => {
+            peerConnection.setLocalDescription(offer);
+            socket.emit('offer', offer);
+        })
+        .catch(error => console.error('Error creating offer.', error));
+});
+socket.on('disconnect-peer', handleDisconnection);
+  
+
+function handleOffer(offer) {
+    peerConnection = new RTCPeerConnection(peerConnectionConfig);
+
+    peerConnection.ontrack = event => {
+        remoteStream = event.streams[0];
+        remoteVideo.srcObject = remoteStream;
+    };
+
+    peerConnection.onicecandidate = event => {
+        if (event.candidate) {
+            socket.emit('candidate', event.candidate);
+        }
+    };
+
+    peerConnection.setRemoteDescription(new RTCSessionDescription(offer))
+        .then(() => peerConnection.addStream(localStream))
+        .then(() => peerConnection.createAnswer())
+        .then(answer => {
+            peerConnection.setLocalDescription(answer);
+            socket.emit('answer', answer);
+        })
+        .catch(error => console.error('Error handling offer.', error));
+}
+
+function handleAnswer(answer) {
+    peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+}
+
+function handleCandidate(candidate) {
+    const iceCandidate = new RTCIceCandidate(candidate);
+    peerConnection.addIceCandidate(iceCandidate)
+        .catch(error => console.error('Error adding received ice candidate.', error));
+}
+function handleDisconnection() {
+        if (remoteStream) {
+            remoteStream.getTracks().forEach(track => track.stop());
+            remoteVideo.srcObject = null;
+            remoteStream = null;
+        }
+        if (peerConnection) {
+            peerConnection.close();
+            peerConnection = null;
+        }
+      
+    }
+   
+ </script>
+ <script>
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    const leaveCallButton = document.getElementById('leave-call');
+    const toggleMicrophoneButton = document.getElementById('toggle-microphone');
+    const toggleCameraButton = document.getElementById('toggle-camera');
+
+    let localStream;
+
+    // Function to get local media stream (camera and microphone)
+    async function getLocalStream() {
+        try {
+            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            // Use the video stream (e.g., display in a <video> tag)
+            const videoElement = document.querySelector('video#localVideo');
+            videoElement.srcObject = localStream;
+        } catch (error) {
+            console.error('Error accessing media devices.', error);
+        }
+    }
+
+    // Get local media stream on page load
+    getLocalStream();
+
+    // Function to toggle microphone
+    toggleMicrophoneButton.addEventListener('click', () => {
+        const icon = toggleMicrophoneButton.querySelector('i');
+        const audioTracks = localStream.getAudioTracks();
+        if (audioTracks.length > 0) {
+            if (audioTracks[0].enabled) {
+                audioTracks[0].enabled = false;
+                icon.classList.remove('fa-microphone');
+                icon.classList.add('fa-microphone-slash');
+                console.log('Microphone muted');
+                // Notify remote peer about the change
+                socket.emit('toggle-microphone', { enabled: false });
+            } else {
+                audioTracks[0].enabled = true;
+                icon.classList.remove('fa-microphone-slash');
+                icon.classList.add('fa-microphone');
+                console.log('Microphone unmuted');
+                // Notify remote peer about the change
+                socket.emit('toggle-microphone', { enabled: true });
+            }
+        }
+    });
+
+    // Function to toggle camera
+    toggleCameraButton.addEventListener('click', () => {
+        const icon = toggleCameraButton.querySelector('i');
+        const videoTracks = localStream.getVideoTracks();
+        if (videoTracks.length > 0) {
+            if (videoTracks[0].enabled) {
+                videoTracks[0].enabled = false;
+                icon.classList.remove('fa-video');
+                icon.classList.add('fa-video-slash');
+                console.log('Camera off');
+                // Notify remote peer about the change
+                socket.emit('toggle-camera', { enabled: false });
+            } else {
+                videoTracks[0].enabled = true;
+                icon.classList.remove('fa-video-slash');
+                icon.classList.add('fa-video');
+                console.log('Camera on');
+                // Notify remote peer about the change
+                socket.emit('toggle-camera', { enabled: true });
+            }
+        }
+    });
+
+    // Function to leave the call
+    leaveCallButton.addEventListener('click', () => {
+        socket.emit('leave-call');
+        console.log('Call ended');
+    });
+
+    // Handle incoming toggle microphone messages
+    socket.on('toggle-microphone', (data) => {
+        const remoteAudioTracks = remoteStream.getAudioTracks();
+        if (remoteAudioTracks.length > 0) {
+            remoteAudioTracks[0].enabled = data.enabled;
+            console.log('Remote microphone ' + (data.enabled ? 'unmuted' : 'muted'));
+        }
+    });
+
+    // Handle incoming toggle camera messages
+    socket.on('toggle-camera', (data) => {
+        const remoteVideoTracks = remoteStream.getVideoTracks();
+        if (remoteVideoTracks.length > 0) {
+            remoteVideoTracks[0].enabled = data.enabled;
+            console.log('Remote camera ' + (data.enabled ? 'on' : 'off'));
+        }
+    });
+});
+
+
+ </script>
+
+ <script>
+    // timer.js
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    let timerElement = document.getElementById('timer');
+    let startTime = Date.now();
+
+    function updateTimer() {
+        let currentTime = Date.now();
+        let elapsedTime = currentTime - startTime;
+
+        let hours = Math.floor(elapsedTime / (1000 * 60 * 60));
+        let minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
+        let seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
+
+        timerElement.textContent = 
+            (hours < 10 ? '0' : '') + hours + ':' + 
+            (minutes < 10 ? '0' : '') + minutes + ':' + 
+            (seconds < 10 ? '0' : '') + seconds;
+    }
+
+    // Update the timer every second
+    setInterval(updateTimer, 1000);
+});
+
+ </script>
+
+</body>
+
+</html>

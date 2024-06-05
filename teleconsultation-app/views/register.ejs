@@ -1,0 +1,54 @@
+<%- include('./layouts/header') %>
+
+<form class="register form" action="/auth/register" method="post">
+<div class='container'>
+  <h1 id="id2">S'inscrire</h1>
+</div>
+  
+    <div>
+      <label id="id1" for="firstName">Prénom :</label>
+          <input type="text" id="firstName" name="firstName" required>
+    </div>
+    <div>
+      <label id="id1" for="lastName">Nom :</label>
+          <input type="text" id="lastName" name="lastName" required>
+    </div>
+    <label id="id1" for="email">Email :</label>
+    <input
+      type="text"
+      name="email"
+      id="email"
+    />
+  </div>
+  <div>
+    <label id="id1" for="password">Mot de passe :</label>
+    <input type="password" name="password" id="password" />
+  </div>
+  <div>
+    <label id="id1" for="password2">Confirmer le mot de passe</label>
+    <input type="password" name="password2" id="password2" />
+  </div>
+  <div class="flex">
+    <label id="id1" for="role">Je suis  :</label>
+    <select id="role" name="role" required>
+      <option value="patient">Patient</option>
+      <option value="doctor">Docteur</option>
+    </select>
+  </div>
+  <div>
+    <!-- <input type="submit" value="Register" /> -->
+    <button class="btn submit">S'inscrire</button>
+  </div>
+  <div>
+    <p id="login">
+      Déja inscrit ? <span><a href="/auth/login">Se connecter</a></span>
+    </p>
+  </div>
+</form>
+<br />
+<style>
+  #login {
+    text-align: center;
+  }
+</style>
+<%- include('./layouts/footer') %>
