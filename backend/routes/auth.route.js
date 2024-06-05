@@ -59,7 +59,7 @@ router.post(
       
       const doesExist = await User.findOne({ email });
       if (doesExist) {
-        req.flash('warning', 'Username/email already exists');
+        req.flash('warning', 'email existant');
         res.redirect('/auth/register');
         return;
       }
@@ -78,7 +78,7 @@ router.post(
       }
       req.flash(
         'success',
-        `${user.email} registered succesfully, you can now login`
+        `${user.email} inscrit avec succès, vous pouvew maintenat vous connecter`
       );
       res.redirect('/auth/login');
     } catch (error) {
