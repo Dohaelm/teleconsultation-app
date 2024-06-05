@@ -78,7 +78,7 @@ router.post(
       }
       req.flash(
         'success',
-        `${user.email} inscrit avec succès, vous pouvew maintenat vous connecter`
+        `${user.email} inscrit avec succès, vous pouvez maintenant vous connecter`
       );
       res.redirect('/auth/login');
     } catch (error) {
