@@ -51,6 +51,10 @@ app.use((req, res, next) => {
   res.locals.user = req.user;
   next();
 });
+app.use((req, res, next) => {
+  res.locals.currentRoute = req.path;
+  next();
+});
 
 // Connect Flash
 app.use(connectFlash());
