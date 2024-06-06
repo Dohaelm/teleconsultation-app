@@ -49,7 +49,7 @@
           </div>
         </div>
           <p class="title">Groupe Sanguin</p>
-          <input class="subtitle" name="bloodType" value="<%= patient.bloodtype %>">
+          <input class="subtitle" name="bloodType" value="<%= patient.bloodType %>">
           <button class="edit-profile" type="submit">Enregistrer</button>
       <button class="cancel"><a href="/user/profile" >Annuler</a></button>
         </div>
@@ -135,7 +135,7 @@
       </select>
       </div>
 
-      <div id="dateTimeFields">
+      <div id="dateTimeFields" style="display: none;">
       <label for="debut">Début</label>
       <input type="date" name="debut" id="debut">
       
@@ -247,7 +247,12 @@ document.getElementById('typeInfo').addEventListener('change', function() {
         const dateTimeFields = document.getElementById('dateTimeFields');
         const dateField = document.getElementById('dateField');
         const contenu=document.getElementById('contenu');
-        if (typeInfo === 'Congé') {
+        if (typeInfo === '') {
+            dateTimeFields.style.display = 'none';
+            dateField.style.display = 'none';
+            contenu.style.display='none';
+        }
+       else if (typeInfo === 'Congé') {
             dateTimeFields.style.display = 'block';
             dateField.style.display = 'none';
             contenu.style.display='none';
@@ -270,8 +275,13 @@ document.getElementById('typeInfo').addEventListener('change', function() {
         const typeInfo = document.getElementById('typeInfo').value;
         const dateTimeFields = document.getElementById('dateTimeFields');
         const dateField = document.getElementById('dateField');
+        if (typeInfo === '') {
+            dateTimeFields.style.display = 'none';
+            dateField.style.display = 'none';
+            contenu.style.display='none';
+        }
 
-        if (typeInfo === 'Congé') {
+       else if (typeInfo === 'Congé') {
             dateTimeFields.style.display = 'block';
             dateField.style.display = 'none';
             contenu.style.display='none';
