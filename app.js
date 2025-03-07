@@ -43,14 +43,14 @@ app.use(
 );
 const createAdminUser = async () => {
   try {
-    const adminUser = await User.findOne({ email: 'admin@gmail.com' });
+    const adminUser = await User.findOne({ email: 'admin@example.com' });
 
     if (!adminUser) {
       const newAdmin = new User({
         firstName: 'Admin',
         lastName: 'User',
-        email: 'admin@gmail.com', // Set a secure email in production
-        password: '12',  // Set a secure password in production
+        email: 'admin@example.com', // Set a secure email in production
+        password: 'adminpassword',  // Set a secure password in production
         role: roles.admin
       });
       await newAdmin.save();
@@ -131,7 +131,49 @@ mongoose
 
   })
   .catch((err) => console.log(err.message));
-  
+  io.on('connection', socket => {
+    console.log('A user connected');
+
+    socket.on('join', room => {
+        socket.join(room);
+        const clients = io.sockets.adapter.rooms.get(room);
+
+        if (clients.size === 2) {
+            socket.to(room).emit('ready');
+        }
+    });
+
+    socket.on('offer', offer => {
+        socket.to('room1').emit('offer', offer);
+    });
+
+    socket.on('answer', answer => {
+        socket.to('room1').emit('answer', answer);
+    });
+
+    socket.on('candidate', candidate => {
+        socket.to('room1').emit('candidate', candidate);
+    });
+
+    socket.on('toggle-microphone', data => {
+        socket.to('room1').emit('toggle-microphone', data);
+    });
+
+    socket.on('toggle-camera', data => {
+        socket.to('room1').emit('toggle-camera', data);
+    });
+
+    socket.on('leave-call', () => {
+        console.log('A user left the call');
+        socket.to('room1').emit('disconnect-peer');
+        socket.leave('room1');
+    });
+
+    socket.on('disconnect', () => {
+        console.log('A user disconnected');
+        socket.broadcast.emit('disconnect-peer');
+    });
+});
 server.listen(3000, () => {
   console.log(`🚀 @ http://localhost:${PORT}`);
 });
