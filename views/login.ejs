@@ -1,0 +1,25 @@
+<%- include('./layouts/header') %>
+<form class="login form" action="/auth/login" method="post" class="lg-form">
+  <div class='container'>
+    <h1 id="id2">Se connecter</h1>
+  </div>
+  <div>
+    <label id="id1" for="email">Email</label>
+    <input type="email" name="email" id="email" />
+  </div>
+  <div>
+    <label id="id1" for="password">Mot de passe</label>
+    <input type="password" name="password" id="password" />
+  </div>
+  <div>
+    <button class="btn submit">Se connecter</button>
+  </div>
+  
+  <div>
+    <p>
+      Vous n'avez pas encore de compte? <span><a href="/auth/register">S'inscrire</a></span>
+    </p>
+  </div>
+</form>
+<br />
+<%- include('./layouts/footer') %>

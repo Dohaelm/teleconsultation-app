@@ -1,0 +1,115 @@
+
+<%- include('./layouts/header') %>
+<h2 id="id2" class="center">Prise de rendez-vous</h2>
+<div class="booking">
+
+<form class="form" action="/user/book-appointment" method="POST">
+    <div>
+        <label for="patientEmail">Email du patient :</label>
+        <input type="email" id="patientEmail" name="patientEmail" value="<%= patient.email %>" readonly >
+    </div>
+    <div>
+        <label for="doctorEmail">Email du médecin :</label>
+        <input type="email" id="doctorEmail" name="doctorEmail" value="<%= doctor.email %>"  readonly>
+    </div>
+    <div>
+        <label for="date">Date de consultation :</label>
+        <input type="date" id="date" name="date" required>
+    </div>
+    <div id="timeSlotContainer" style="display: none;">
+        <label for="timeSlot">Créneaux horaires disponibles :</label>
+        <select id="timeSlotSelect" name="timeSlotSelect" required>
+            <option value="">Choisir un créneau horaire</option>
+        </select>
+    </div>
+    <p id="notavailable"></p>
+    <input type="hidden" id="selectedTimeSlot" name="timeSlot">
+    
+    <div>
+        <label for="reason">Raison de consultation :</label>
+        <textarea id="reason" name="reason" rows="4" ></textarea>
+    </div>
+   
+    <button class="edit-profile" type="submit">Confirmer</button>
+    <button class="cancel"><a href="/user/doctors"></a>Annuler</button>
+</form>
+
+
+</div>
+
+<script>
+    document.getElementById('date').addEventListener('change', async function() {
+        const date = this.value;
+        const doctorEmail = document.getElementById('doctorEmail').value;
+
+        try {
+            const response = await fetch(`/user/available-timeslots?doctorEmail=${doctorEmail}&date=${date}`);
+            if (response.ok) {
+                const availableTimes = await response.json();
+                displayTimeSlots(availableTimes);
+            } else {
+                alert('Could not fetch available time slots');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while fetching time slots. Please try again.');
+        }
+    });
+
+    function displayTimeSlots(times) {
+        const timeSlotContainer = document.getElementById('timeSlotContainer');
+        const timeSlotSelect = document.getElementById('timeSlotSelect');
+        const notavailable=document.getElementById('notavailable');
+        timeSlotSelect.innerHTML = '<option value="">Selectionner un horaire</option>';
+        if (times.length > 0) {
+            times.forEach(time => {
+                const option = document.createElement('option');
+                option.value = time;
+                option.textContent = time;
+                timeSlotSelect.appendChild(option);
+            });
+            notavailable.textContent="";
+            timeSlotContainer.style.display = 'block';
+        } else {
+            timeSlotContainer.style.display = 'none';
+            notavailable.textContent="Aucun créneau horaire disponible."
+        }
+    }
+
+    document.getElementById('timeSlotSelect').addEventListener('change', function() {
+        const selectedTime = this.value;
+        document.getElementById('selectedTimeSlot').value = selectedTime;
+    });
+
+    document.getElementById('bookingForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+    
+        const formData = new FormData(this);
+    
+        try {
+            const response = await fetch('/user/book-appointment', {
+                method: 'POST',
+                body: formData
+            });
+    
+            if (response.ok) {
+                alert('Appointment booked successfully!');
+                window.location.href = '/'; // Redirect on success
+            } else {
+                const errorMessage = await response.text();
+                alert(`Error: ${errorMessage}`);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while booking the appointment. Please try again.');
+        }
+    });
+
+    document.getElementById('cancelButton').addEventListener('click', function(event) {
+        event.preventDefault();
+        window.location.href = '/user/doctors'; // Redirect to doctors page upon cancel
+    });
+</script>
+
+
+

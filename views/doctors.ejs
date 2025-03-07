@@ -1,0 +1,49 @@
+<%- include ('layouts/header') %>
+<div class="wrapper">
+  <%- include('./layouts/sidebar') %>
+  <div class="content">
+    <h1 id="id2" class="table">Medecins</h1>
+
+    <form id="searchForm" action="/user/doctors" method="GET">
+      <input id="searchInput" type="text" name="search" placeholder="Chercher par nom, ville ou spécialité" value="<%= searchQuery || '' %>">
+      <button type="submit">Search</button>
+    </form>
+
+    <table class="table">
+      <thead>
+        <th>Nom</th>
+      
+        <th>Email</th>
+        <th>Spécialité</th>
+        <th>Ville</th>
+      </thead>
+      <tbody>
+        <% doctors.forEach(doctor => { %>
+        <tr>
+          <td><%= doctor.firstName %> <%= doctor.lastName %> </td>
+          <td><a class="link" href="/user/doctor/<%= doctor.email %>"><%= doctor.email %></a></td>
+          <td><%= doctor.specialization %> </td>
+          <td><%= doctor.city %> </td>
+        
+    </tr>
+    <% }) %>
+    </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include ('layouts/footer') %>
+
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+      const searchInput = document.getElementById('searchInput');
+      const searchParams = new URLSearchParams(window.location.search);
+      const searchQuery = searchParams.get('search');
+
+      if (searchQuery) {
+          searchInput.value = searchQuery;
+      }
+  });
+</script>
+
+

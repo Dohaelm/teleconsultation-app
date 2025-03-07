@@ -1,0 +1,106 @@
+<%- include('./layouts/header') %>
+<div class="wrapper">
+
+  <%- include('./layouts/sidebar') %>
+
+  <div class="content">
+    <h1 id="id2">Profile</h1>
+    <div class="profile-container">
+      <div class="profile-line">
+        <p>Prénom</p>
+        <p><%= person.firstName %></p>
+      </div>
+      <div class="profile-line">
+        <p>Nom</p>
+        <p><%= person.lastName %></p>
+      </div>
+      <div class="profile-line">
+        <p>Email</p>
+        <p><%= person.email %></p>
+      </div>
+      <div class="profile-line">
+        <p>Role</p>
+        <p><%= person.role %></p>
+      </div>
+      <% if (patient) { %>
+        <div class="profile-line">
+          <p>Date de naissance</p>
+          <% if (condition4) { %>
+            <p class="subtitle" name="birthdate" ><%= patient.birthdate.toLocaleDateString('en-GB') %></p>
+          <% } else { %>
+            <p class="subtitle" name="birthdate"><%= patient.birthdate %></p>
+          <% } %>
+        </div>
+        <div class="profile-line">
+          <p>Ville</p>
+          <p><%= patient.city %></p>
+        </div>
+        <div class="profile-line">
+          <p>Poids en kg</p>
+          <p><%= patient.weight %></p>
+        </div>
+        <div class="profile-line">
+          <p>Taille en cm</p>
+          <p><%= patient.height %></p>
+        </div>
+        <div class="profile-line">
+          <p>Groupe Sanguin</p>
+          <p><%= patient.bloodType %></p>
+        </div>
+      <% } else if (doctor) { %>  
+        <div class="profile-line">
+          <p>Ville</p>
+          <p><%= doctor.city %></p>
+        </div>
+        <div class="profile-line">
+          <p>Spécialité</p>
+          <p><%= doctor.specialization %></p>
+        </div>
+        <div class="profile-line">
+          <p>Années d'expérience</p>
+          <p><%= doctor.experience %></p>
+        </div>
+        <div class="profile-line">
+          <p>Disponibilité</p>
+          <ul>
+            <% sortedAvailability.forEach(day => { %>
+              <li>
+                  <p class="position"><%= day.dayOfWeek %>:</p>
+                  <ul>
+                      <% for (let i = 0; i < day.startTimes.length; i++) { %>
+                          <li>
+                              <p><%= day.startTimes[i] %> - <%= day.endTimes[i] %></p>
+                          </li>
+                      <% } %>
+                  </ul>
+              </li>
+          <% }) %>
+      </ul>
+      </div>
+
+      <div class="profile-line">
+        <p>Infos supplémentaires</p>
+        <% if (doctor.additionalInfo && doctor.additionalInfo.length > 0) { %>
+            <% doctor.additionalInfo.forEach(info => { %>
+                <p><%= info.contenu %></p>
+            <% }) %>
+        <% } %>
+    </div>
+
+      <% } %>
+     <% if (condition1) { %>
+      
+      <button class="edit-profile"><a href="/user/edit-profile">Modifier Profile</a></button>
+     <% } %>
+     
+     <% if (condition3) { %>
+      <button class="edit-profile"> <a href="/user/booking/<%= doctor.id %>">Je prends un rendez-vous</a></button>
+     <% } %>
+    </div>
+  </div>
+</div>
+
+
+
+
+<%- include('./layouts/footer') %>

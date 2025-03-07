@@ -1,0 +1,379 @@
+<%- include('./layouts/header') %>  
+
+<h1 id="id2">Modifier Profile</h1>
+<div class="profile-container1">
+  <div class="profile">
+    <form  action="/user/save" method="post">
+    <div class="flex">
+      <div class="margin">
+        <p class="title">Prénom</p>
+        <input class="subtitle" name="firstName" value="<%= person.firstName %>">
+      </div>
+      <div>
+        <p class="title">Nom</p>
+        <input class="subtitle" name="lastName" value="<%= person.lastName %>">
+      </div>
+    </div>
+    <div>
+      <p class="title">Email</p>
+      <input name="email" value="<%= person.email %>" readonly>
+    </div>
+    <% if (!patient && !doctor) { %>
+      <button class="edit-profile" type="submit">Enregistrer</button>
+      <button class="cancel"><a href="/user/profile">Annuler</a></button>
+    <%}%>
+      
+      <% if (patient) { %>
+        <div class="flex">
+          <div class="margin">
+            <p class="title">Date de naissance</p>
+            <% if (condition4) { %>
+              <input class="subtitle" name="birthdate" value="<%= patient.birthdate.toLocaleDateString('en-GB') %>">
+            <% } else { %>
+              <input class="subtitle" name="birthdate" value="<%= patient.birthdate %>">
+            <% } %>
+          </div>
+          <div>
+            <p class="title">Ville</p>
+            <input class="subtitle" name="city" value="<%= patient.city %>">
+          </div>
+        </div>
+        <div class="flex">
+          <div class="margin">
+            <p class="title">Poids</p>
+            <input class="subtitle" name="weight" value="<%= patient.weight %>">
+          </div>
+          <div>
+            <p class="title">Taille</p>
+            <input class="subtitle" name="height" value="<%= patient.height %>">
+          </div>
+        </div>
+          <p class="title">Groupe Sanguin</p>
+          <input class="subtitle" name="bloodType" value="<%= patient.bloodType %>">
+          <button class="edit-profile" type="submit">Enregistrer</button>
+      <button class="cancel"><a href="/user/profile" >Annuler</a></button>
+        </div>
+      <% } else if (doctor) { %>  
+        <div class="flex">
+          <div class="margin">
+            <p class="title">Ville</p>
+            <input class="subtitle" name="city" value="<%= doctor.city %>">
+          </div>
+          <div>
+            <p class="title">Spécialité</p>
+            <input class="subtitle" name="specialization" value="<%= doctor.specialization %>">
+          </div>
+        </div>
+        <div>
+          <p class="title">Années d'expérience</p>
+          <input class="subtitle" name="experience" value="<%= doctor.experience %>">
+        </div>
+       
+        <div id="availabilityInputs">
+          <label id="id1" class="title">Disponibilité</label>
+          <!-- Day of the Week Selection -->
+          <div class="flex">
+            <label for="dayOfWeek"><i id="i" class="fa-regular fa-calendar"></i>Choisir un jour de la semaine:</label>
+          <select id="dayOfWeek" name="daysOfWeek[]">
+              <% const daysOfWeek = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']; %>
+              <% daysOfWeek.forEach(day => { %>
+                  <option value="<%= day %>"><%= day %></option>
+              <% }); %>
+          </select>
+          </div>
+  
+          <!-- Start Time Input -->
+          <div class="flex">
+            <label for="startTime"><i id="i" class="fa-regular fa-clock"></i>Horaire de début:</label>
+            <select id="startTime" name="startTimes[]">
+              <option value="00:00">00:00</option> <!-- Special case for midnight -->
+              <% for (let hour = 0; hour < 24; hour++) { %>
+                  <% for (let minute = 0; minute < 60; minute += 30) { %>
+                      <% const paddedHour = hour.toString().padStart(2, '0'); %>
+                      <% const paddedMinute = minute.toString().padStart(2, '0'); %>
+                      <option value="<%= paddedHour %>:<%= paddedMinute %>"><%= paddedHour %>:<%= paddedMinute %></option>
+                  <% } %>
+              <% } %>
+          </select>
+          </div>
+  
+          <div class="flex">
+            <label for="endTime"><i id="i" class="fa-regular fa-clock"></i>Horaire de fin:</label>
+            <select id="endTime" name="endTimes[]">
+              <option value="00:00">00:00</option> <!-- Special case for midnight -->
+              <% for (let hour = 0; hour < 24; hour++) { %>
+                  <% for (let minute = 0; minute < 60; minute += 30) { %>
+                      <% const paddedHour = hour.toString().padStart(2, '0'); %>
+                      <% const paddedMinute = minute.toString().padStart(2, '0'); %>
+                      <option value="<%= paddedHour %>:<%= paddedMinute %>"><%= paddedHour %>:<%= paddedMinute %></option>
+                  <% } %>
+              <% } %>
+          </select>
+          </div>
+          <br>
+  
+          <!-- Add Button -->
+          <button class="add-availability" type="button" onclick="addAvailability()"><i class="fa-solid fa-plus"></i>Ajouter disponibilité</button>
+      </div>
+  
+      <!-- Selected Availability Display -->
+      <ul id="selectedAvailability"></ul>
+      <div id="checkboxesd"></div>
+      <div id="checkboxest"></div>
+      <div id="checkboxese"></div>
+      
+      <label id="id1" class="title">Infos supplémentaires</label>
+     <div class="additionalInfo">
+      <div class="flex">
+        <p for="typeInfo">Type d'information :</p>
+      <select id="typeInfo" name="typeInfo"  >
+          <option value="">Sélectionner une option</option>
+          <option value="Congé">Congé</option>
+          <option value="Disponibilité exceptionnelle">Disponibilité exceptionnelle</option>
+          <option value="Non disponibilité exceptionnelle">Non disponibilité exceptionnelle</option>
+          <option value="Autre">Autre</option>
+      </select>
+      </div>
+
+      <div id="dateTimeFields" style="display: none;">
+      <label for="debut">Début</label>
+      <input type="date" name="debut" id="debut">
+      
+      <label for="fin">fin</label>
+      <input type="date" name="fin" id="fin">
+    </div>
+        
+        <div id="dateField" style="display: none;">
+          <p for="date">Date</p>
+          <input type="date" name="date" id="date">
+          <div class="flex">
+            <p for="debut">De</p>
+          <select id="time" name="timeStart">
+            <option value="">Sélectionnez un horaire</option>
+            <option value="00:00">00:00</option> <!-- Special case for midnight -->
+            <% for (let hour = 0; hour < 24; hour++) { %>
+                <% for (let minute = 0; minute < 60; minute += 30) { %>
+                    <% const paddedHour = hour.toString().padStart(2, '0'); %>
+                    <% const paddedMinute = minute.toString().padStart(2, '0'); %>
+                    <option value="<%= paddedHour %>:<%= paddedMinute %>"><%= paddedHour %>:<%= paddedMinute %></option>
+                <% } %>
+            <% } %>
+        </select>
+          </div>
+          <div class="flex">
+            <p for="fin">à</p>
+          <select id="time" name="timeEnd">
+            <option value="">Sélectionnez un horaire</option>
+            <option value="00:00">00:00</option> <!-- Special case for midnight -->
+            <% for (let hour = 0; hour < 24; hour++) { %>
+                <% for (let minute = 0; minute < 60; minute += 30) { %>
+                    <% const paddedHour = hour.toString().padStart(2, '0'); %>
+                    <% const paddedMinute = minute.toString().padStart(2, '0'); %>
+                    <option value="<%= paddedHour %>:<%= paddedMinute %>"><%= paddedHour %>:<%= paddedMinute %></option>
+                <% } %>
+            <% } %>
+        </select>
+          </div>
+      </div>
+     <div id="contenu" style="display: none;">
+      <label for="contenu" >Contenu</label>
+      
+      <input type="text" name="contenu">
+    </div>
+     </div>
+      <button class="edit-profile" type="submit">Save</button>
+      <button class="cancel"><a href="/user/profile" >cancel</a></button>
+    </form>
+    <br>
+    <div><% if (doctor.availability.length>0) { %>
+      <p id="id1" class="title">Supprimer des disponibilités</p>
+    <% } %>
+     
+      <div> 
+      
+        <ul id="availabilityList">
+          <% sortedAvailability.forEach((slot, index) => { %>
+              <li>
+                  <span><%= slot.dayOfWeek %> :</span>
+                  <ul>
+                      <% for (let i = 0; i < slot.startTimes.length; i++) { %>
+                          <li>
+                            <form class="deleteSlotForm" action="/user/delete-slot" method="post">
+                                <span><%= slot.startTimes[i] %> - <%= slot.endTimes[i] %></span>
+                                  <input type="hidden" name="id" value="<%= doctor.email %>" />
+                                  <input type="hidden" name="slotId" value="<%= slot._id %>" />
+                                  <input type="hidden" name="startTime" value="<%= slot.startTimes[i] %>" />
+                                  <input type="hidden" name="endTime" value="<%= slot.endTimes[i] %>" />
+                                  <button class="cancelp"><i class="fa-solid fa-trash-can"></i></button>
+                              </form>
+                          </li>
+                      <% } %>
+                  </ul>
+              </li>
+          <% }) %>
+      </ul>
+    </div>
+    </ul>
+    </div>
+    
+    <% if (doctor.additionalInfo.length>0) { %>
+      <p id="id1" class="title"> Supprimer des informations supplémentaires</p>
+    <% } %>
+    
+    <div class="additionalInfo">
+   
+      <% if (doctor.additionalInfo && doctor.additionalInfo.length > 0) { %>
+          <ul id="additionalInfoList">
+              <% doctor.additionalInfo.forEach((info, index) => { %>
+                  <li>
+                      <form class="deleteAdditionalInfoForm" action="/user/delete-additional-info" method="post">
+                          
+                          <span><%= info.contenu %></span>
+                          <input type="hidden" name="doctorEmail" value="<%= doctor.email %>" />
+                          <input type="hidden" name="additionalInfoId" value="<%= info._id %>" />
+                          <button class="cancelp" type="submit"><i class="fa-solid fa-trash-can"></i></button>
+                      </form>
+                  </li>
+              <% }) %>
+          </ul>
+      <% } %>
+  </div>
+  </div>
+ 
+  
+  <script>
+document.getElementById('typeInfo').addEventListener('change', function() {
+        const typeInfo = this.value;
+        const dateTimeFields = document.getElementById('dateTimeFields');
+        const dateField = document.getElementById('dateField');
+        const contenu=document.getElementById('contenu');
+        if (typeInfo === '') {
+            dateTimeFields.style.display = 'none';
+            dateField.style.display = 'none';
+            contenu.style.display='none';
+        }
+       else if (typeInfo === 'Congé') {
+            dateTimeFields.style.display = 'block';
+            dateField.style.display = 'none';
+            contenu.style.display='none';
+        }
+        else if(typeInfo==='Autre'){
+
+         dateTimeFields.style.display = 'none';
+           dateField.style.display = 'none';
+           contenu.style.display='block';
+                 } 
+        else {
+            dateTimeFields.style.display = 'none';
+            dateField.style.display = 'block';
+            contenu.style.display='none';
+        }
+    });
+
+    // Initialize the fields on page load in case a type is pre-selected
+    document.addEventListener('DOMContentLoaded', function() {
+        const typeInfo = document.getElementById('typeInfo').value;
+        const dateTimeFields = document.getElementById('dateTimeFields');
+        const dateField = document.getElementById('dateField');
+        if (typeInfo === '') {
+            dateTimeFields.style.display = 'none';
+            dateField.style.display = 'none';
+            contenu.style.display='none';
+        }
+
+       else if (typeInfo === 'Congé') {
+            dateTimeFields.style.display = 'block';
+            dateField.style.display = 'none';
+            contenu.style.display='none';
+        }
+        else if(typeInfo==='Autre'){
+
+          dateTimeFields.style.display = 'none';
+            dateField.style.display = 'none';
+            contenu.style.display='block';
+        } else {
+            dateTimeFields.style.display = 'none';
+            dateField.style.display = 'block';
+            contenu.style.display='none';
+        }
+    });
+    
+
+    function addAvailability() {
+      const selectedAvailability=document.getElementById("selectedAvailability")
+        
+      // console.log(doctor.availability)
+          // Get selected day of the week and start time
+          const dayOfWeek = document.getElementById('dayOfWeek').value;
+          const startTime = document.getElementById('startTime').value;
+          const endTime = document.getElementById('endTime').value;
+         
+  
+          // Create list item with day and start time
+          const listItem = document.createElement('li');
+          listItem.textContent = `${dayOfWeek}: ${startTime}-${endTime}`;
+          // Create list item with day and start time
+          const checkboxItemd = document.createElement('input');
+          checkboxItemd.type = 'checkbox';
+          checkboxItemd.id = 'daysOfweek';
+          checkboxItemd.name = 'daysOfweekArray[]';
+          checkboxItemd.value = `${dayOfWeek}`;
+          checkboxItemd.checked=true;
+          checkboxItemd.style.display = 'none';
+          const checkboxItemt = document.createElement('input');
+          checkboxItemt.type = 'checkbox';
+          checkboxItemt.id = 'startTime';
+          checkboxItemt.name = 'startTimesArray[]';
+          checkboxItemt.value = `${startTime}`;
+          checkboxItemt.checked=true;
+          checkboxItemt.style.display = 'none';
+  
+          const checkboxIteme = document.createElement('input');
+          checkboxIteme.type = 'checkbox';
+          checkboxIteme.id = 'endTime';
+          checkboxIteme.name = 'endTimesArray[]';
+          checkboxIteme.value = `${endTime}`;
+          checkboxIteme.checked=true;
+          checkboxIteme.style.display = 'none';
+  
+          // Create delete button
+          const deleteButton = document.createElement('button');
+          deleteButton.textContent = 'Delete';
+          deleteButton.classList.add('cancelp');
+          deleteButton.addEventListener('click', function() {
+              // Remove the corresponding list item when delete button is clicked
+              listItem.remove();
+              checkboxItemd.remove();
+              checkboxItemt.remove()
+              checkboxIteme.remove()
+          });
+  
+          // Append delete button to the list item
+          listItem.appendChild(deleteButton);
+  
+          // Append list item to the selected availability list
+          
+          const checkboxesd = document.getElementById('checkboxesd');
+          const checkboxest = document.getElementById('checkboxest');
+          const checkboxese = document.getElementById('checkboxese');
+          selectedAvailability.appendChild(listItem);
+          checkboxesd.appendChild(checkboxItemd);
+          checkboxest.appendChild(checkboxItemt);
+          checkboxese.appendChild(checkboxIteme);
+         
+          
+      }
+      
+
+
+
+  </script>
+      <% } %>
+  
+    
+  
+     
+</div>
+</div>          
+      
+<!-- <%- include('./layouts/footer') %> -->

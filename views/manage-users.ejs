@@ -1,0 +1,56 @@
+<%- include ('layouts/header') %>
+
+<div class="wrapper">
+  <%- include ('layouts/sidebar') %>
+
+  <div class="content">
+    <h1 id="id2" class="table">Gestion d'utilisateurs</h1>
+    <table class="table">
+      <thead>
+        <th>Id</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Action</th>
+      </thead>
+      <tbody>
+        <% users.forEach(user => { %>
+        <tr>
+          <td><%= user.id %></td>
+          <td><a class="link" href="/admin/user/<%= user.id %>"><%= user.email %></a></td>
+          <td>
+            <form
+              
+              action="/admin/update-role"
+              method="post"
+              class="manage-user-form"
+            >
+              <input type="hidden" name="id" value="<%= user.id %>" />
+              <div class="flex"><select name="role" id="role">
+                <option value="ADMIN" <%= user.role === 'ADMIN' ? 'selected' : '' %> >Admin</option>
+                <option value="DOCTOR" <%= user.role === 'DOCTOR' ? 'selected' : '' %>>Docteur</option>
+                <option value="PATIENT" <%= user.role === 'PATIENT' ? 'selected' : '' %>>Patient</option>
+                <option value="ATTENTE" <%= user.role === 'ATTENTE' ? 'selected' : '' %>>Attente</option>
+              </select>
+              <!-- <input class="update" type="submit" value="update"> -->
+              <button type="submit" class="edit-profile"><i class="fa-regular fa-pen-to-square"></i></button></div>
+            </form>
+          </td>
+          <td> <!-- New column for actions -->
+            <form action="/admin/delete-user" method="post" class="manage-user-form" onsubmit="return confirm('Etes-vous sur de vouloir supprimer cet utilisateur?')">
+                <input type="hidden" name="id" value="<%= user.id %>" />
+                <button class="delete" type="submit"><i class="fa-solid fa-trash-can"></i></button>
+            </form>
+        </td>
+    </tr>
+    <% }) %>
+    </tbody>
+    </table>
+  </div>
+</div>
+
+
+
+
+
+
+<%- include ('layouts/footer') %>
